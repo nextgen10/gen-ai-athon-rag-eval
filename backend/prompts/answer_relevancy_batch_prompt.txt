@@ -1,0 +1,26 @@
+You are an expert RAG evaluator.
+
+Task:
+For each input item, score answer_relevancy from 0.0 to 1.0.
+
+Definition:
+- answer_relevancy: How directly and completely the answer addresses the question, without unnecessary unrelated content.
+
+Rules:
+- Use only question, answer, context, ground_truth.
+- Return ONLY valid JSON, no markdown.
+- Output one result per input item.
+- score must be float in [0.0, 1.0].
+
+Output JSON schema:
+{
+  "results": [
+    {
+      "case_id": "<string>",
+      "score": <float>
+    }
+  ]
+}
+
+Input batch JSON:
+{{BATCH_INPUT_JSON}}
