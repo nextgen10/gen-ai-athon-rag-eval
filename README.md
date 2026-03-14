@@ -19,6 +19,8 @@ A premium evaluation observability platform for RAG-based chatbots. Designed to 
 ```bash
 cd nexus-eval/backend
 pip install -r requirements.txt
+cp .env.example .env
+# update .env with AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, and AZURE_OPENAI_DEPLOYMENT
 python main.py
 ```
 Backend runs at `http://localhost:8000`.
