@@ -307,32 +307,34 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
         <Box sx={{ minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 1, justifyContent: 'center' }}>
 
           {/* Column axis header */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto', gap: 1 }}>
             <Box />
-            {([
-              { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, ok: true },
-              { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, ok: false },
-            ] as const).map(({ label, sub, ok }) => (
-              <Box key={label} sx={{
-                width: '190px', textAlign: 'center', py: 0.75,
-                bgcolor: ok
-                  ? (dark ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.07)')
-                  : (dark ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)'),
-                border: `1px solid ${ok
-                  ? (dark ? 'rgba(52,211,153,0.25)' : 'rgba(5,150,105,0.2)')
-                  : (dark ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)')}`,
-                borderRadius: 2,
-              }}>
-                <Typography sx={{ fontSize: '0.68rem', fontWeight: 800, color: ok ? '#059669' : '#dc2626', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {label}
-                </Typography>
-                <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', mt: 0.15 }}>{sub}</Typography>
-              </Box>
-            ))}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px' }}>
+              {([
+                { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, ok: true },
+                { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, ok: false },
+              ] as const).map(({ label, sub, ok }) => (
+                <Box key={label} sx={{
+                  width: '190px', textAlign: 'center', py: 0.75,
+                  bgcolor: ok
+                    ? (dark ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.07)')
+                    : (dark ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)'),
+                  border: `1px solid ${ok
+                    ? (dark ? 'rgba(52,211,153,0.25)' : 'rgba(5,150,105,0.2)')
+                    : (dark ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)')}`,
+                  borderRadius: 2,
+                }}>
+                  <Typography sx={{ fontSize: '0.68rem', fontWeight: 800, color: ok ? '#059669' : '#dc2626', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    {label}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', mt: 0.15 }}>{sub}</Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
 
           {/* Row 1: Good retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1, height: '190px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto', gap: 1, height: '190px' }}>
             <Box sx={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
@@ -349,12 +351,14 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
                 </Typography>
               </Box>
             </Box>
-            <QuadrantCell q="TP" count={e.matrix.TP} pct={pct(e.matrix.TP)} themeMode={themeMode} delay={0.05} />
-            <QuadrantCell q="FN" count={e.matrix.FN} pct={pct(e.matrix.FN)} themeMode={themeMode} delay={0.1} />
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px', height: '100%' }}>
+              <QuadrantCell q="TP" count={e.matrix.TP} pct={pct(e.matrix.TP)} themeMode={themeMode} delay={0.05} />
+              <QuadrantCell q="FN" count={e.matrix.FN} pct={pct(e.matrix.FN)} themeMode={themeMode} delay={0.1} />
+            </Box>
           </Box>
 
           {/* Row 2: Poor retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1, height: '190px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto', gap: 1, height: '190px' }}>
             <Box sx={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
@@ -371,8 +375,10 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
                 </Typography>
               </Box>
             </Box>
-            <QuadrantCell q="FP" count={e.matrix.FP} pct={pct(e.matrix.FP)} themeMode={themeMode} delay={0.15} />
-            <QuadrantCell q="TN" count={e.matrix.TN} pct={pct(e.matrix.TN)} themeMode={themeMode} delay={0.2} />
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px', height: '100%' }}>
+              <QuadrantCell q="FP" count={e.matrix.FP} pct={pct(e.matrix.FP)} themeMode={themeMode} delay={0.15} />
+              <QuadrantCell q="TN" count={e.matrix.TN} pct={pct(e.matrix.TN)} themeMode={themeMode} delay={0.2} />
+            </Box>
           </Box>
         </Box>
 
