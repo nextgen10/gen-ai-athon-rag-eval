@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { apiPost, ApiError } from '../lib/apiClient';
+
+/** Max rows to prefetch recommendations for when the drilldown view opens. */
+const PREFETCH_BATCH_SIZE = 8;
 import { toNumber } from '../lib/number';
 import type { DrilldownRow } from '../types/evaluation';
 
@@ -29,11 +33,22 @@ export function useRecommendations({ activeView, dataId, drilldownRows, threshol
   const [recommendationDetailOpen, setRecommendationDetailOpen] = useState(false);
   const [recommendationDetailText, setRecommendationDetailText] = useState('');
   const [recommendationDetailRow, setRecommendationDetailRow] = useState('');
+
+  // Tracks keys currently in-flight to prevent duplicate concurrent requests.
   const inFlightKeysRef = useRef<Set<string>>(new Set());
 
+  // Stable ref so requestRecommendationForRow can read the latest map without
+  // being added to its own useCallback deps (which caused cascading re-renders).
+  const recommendationByKeyRef = useRef<Record<string, string>>({});
+  useEffect(() => {
+    recommendationByKeyRef.current = recommendationByKey;
+  }, [recommendationByKey]);
+
+  // Clear cache + in-flight guards whenever the dataset or any threshold changes.
   useEffect(() => {
     setRecommendationByKey({});
     setRecommendationLoadingByKey({});
+    inFlightKeysRef.current.clear(); // <-- Bug fix: stale guards from old dataset
   }, [
     dataId,
     thresholds.faithfulnessEnabled,
@@ -65,8 +80,13 @@ export function useRecommendations({ activeView, dataId, drilldownRows, threshol
         return '';
       }
 
+      // Read current value via ref to avoid including the state map in deps.
+      const existing = recommendationByKeyRef.current[row.key];
       if (inFlightKeysRef.current.has(row.key)) {
-        return recommendationByKey[row.key] || '';
+        return existing || '';
+      }
+      if (existing) {
+        return existing;
       }
 
       inFlightKeysRef.current.add(row.key);
@@ -74,46 +94,40 @@ export function useRecommendations({ activeView, dataId, drilldownRows, threshol
 
       try {
         const contextRaw = row.testCase.bot_contexts?.[row.bot];
-        const context = Array.isArray(contextRaw) ? contextRaw.join('\n') : contextRaw || '';
-        const response = await fetch('http://localhost:8000/recommendation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: row.testCase.query || '',
-            answer: row.testCase.bot_responses?.[row.bot] || '',
-            ground_truth: row.testCase.ground_truth || '',
-            context,
-            scores: {
-              faithfulness: safeVal(row.metrics.faithfulness),
-              hallucination: 1 - safeVal(row.metrics.faithfulness),
-              answer_relevancy: safeVal(row.metrics.answer_relevancy),
-              answer_correctness: safeVal(row.metrics.semantic_similarity),
-              context_recall: safeVal(row.metrics.context_recall),
-              context_precision: safeVal(row.metrics.context_precision),
-              toxicity: safeVal(row.metrics.toxicity),
-              rqs: safeVal(row.metrics.rqs),
-            },
-            thresholds: {
-              faithfulness: thresholds.faithfulnessThreshold,
-              answer_relevancy: thresholds.answerRelevancyThreshold,
-              answer_correctness: thresholds.answerCorrectnessThreshold,
-              context_recall: thresholds.contextRecallThreshold,
-              context_precision: thresholds.contextPrecisionThreshold,
-              rqs: thresholds.rqsThreshold,
-            },
-          }),
+        const context = Array.isArray(contextRaw) ? contextRaw.join('\n') : String(contextRaw ?? '');
+        const payload = await apiPost<{ recommendation: string }>('/recommendation', {
+          query: row.testCase.query || '',
+          answer: row.testCase.bot_responses?.[row.bot] || '',
+          ground_truth: row.testCase.ground_truth || '',
+          context,
+          scores: {
+            faithfulness: safeVal(row.metrics.faithfulness),
+            hallucination: 1 - safeVal(row.metrics.faithfulness),
+            answer_relevancy: safeVal(row.metrics.answer_relevancy),
+            answer_correctness: safeVal(row.metrics.semantic_similarity),
+            context_recall: safeVal(row.metrics.context_recall),
+            context_precision: safeVal(row.metrics.context_precision),
+            toxicity: safeVal(row.metrics.toxicity),
+            rqs: safeVal(row.metrics.rqs),
+          },
+          thresholds: {
+            faithfulness: thresholds.faithfulnessThreshold,
+            answer_relevancy: thresholds.answerRelevancyThreshold,
+            answer_correctness: thresholds.answerCorrectnessThreshold,
+            context_recall: thresholds.contextRecallThreshold,
+            context_precision: thresholds.contextPrecisionThreshold,
+            rqs: thresholds.rqsThreshold,
+          },
         });
 
-        const payload = await response.json();
-        const recommendation =
-          response.ok && payload?.recommendation
-            ? payload.recommendation
-            : 'Unable to generate recommendation for this row.';
-
+        const recommendation = payload?.recommendation || 'Unable to generate recommendation for this row.';
         setRecommendationByKey((prev) => ({ ...prev, [row.key]: recommendation }));
         return recommendation;
-      } catch {
-        const fallback = 'Recommendation service unavailable; review low metrics and retrieval grounding.';
+      } catch (err) {
+        const fallback =
+          err instanceof ApiError && err.status === 504
+            ? 'Recommendation timed out — the LLM is under load. Please retry.'
+            : 'Recommendation service unavailable; review low metrics and retrieval grounding.';
         setRecommendationByKey((prev) => ({ ...prev, [row.key]: fallback }));
         return fallback;
       } finally {
@@ -121,8 +135,10 @@ export function useRecommendations({ activeView, dataId, drilldownRows, threshol
         setRecommendationLoadingByKey((prev) => ({ ...prev, [row.key]: false }));
       }
     },
+    // recommendationByKey intentionally excluded — read via ref to prevent
+    // the callback from being recreated on every fetch (which caused a
+    // cascading prefetch re-render loop).
     [
-      recommendationByKey,
       thresholds.faithfulnessEnabled,
       thresholds.answerRelevancyEnabled,
       thresholds.answerCorrectnessEnabled,
@@ -151,8 +167,10 @@ export function useRecommendations({ activeView, dataId, drilldownRows, threshol
     });
     if (pendingRows.length === 0) return;
 
-    const rowsToFetch = pendingRows.slice(0, 8);
-    Promise.all(rowsToFetch.map((row) => requestRecommendationForRow(row)));
+    const rowsToFetch = pendingRows.slice(0, PREFETCH_BATCH_SIZE);
+    Promise.all(rowsToFetch.map((row) => requestRecommendationForRow(row))).catch(
+      (err) => console.error('[useRecommendations] prefetch error', err)
+    );
   }, [activeView, drilldownRows, recommendationByKey, recommendationLoadingByKey, requestRecommendationForRow]);
 
   const openRecommendationDetail = (text: string, rowLabel: string) => {

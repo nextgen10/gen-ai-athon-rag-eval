@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch, ApiError } from '../lib/apiClient';
 import type { EvaluationData, EvaluationHistoryEntry } from '../types/evaluation';
 
 interface UseEvaluationDataOptions {
@@ -12,40 +13,44 @@ export function useEvaluationData({ activeView, onReportLoaded, onError }: UseEv
   const [history, setHistory] = useState<EvaluationHistoryEntry[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
+  const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
+
+  const fetchHistory = useCallback(async () => {
+    setIsLoadingHistory(true);
+    try {
+      const items = await apiFetch<EvaluationHistoryEntry[]>('/evaluations');
+      setHistory(items);
+      setHasLoadedHistory(true);
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : 'Failed to load evaluation history.';
+      console.error('Failed to fetch history', err);
+      onError?.(msg);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [onError]);
 
   useEffect(() => {
     if (activeView !== 'history') return;
-    setIsLoadingHistory(true);
-    fetch('http://localhost:8000/evaluations')
-      .then((res) => res.json())
-      .then((items) => {
-        setHistory(items);
-        setIsLoadingHistory(false);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch history', err);
-        setIsLoadingHistory(false);
-      });
-  }, [activeView]);
+    if (hasLoadedHistory) return;
+    fetchHistory();
+  }, [activeView, hasLoadedHistory, fetchHistory]);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [latestRes, historyRes] = await Promise.all([
-          fetch('http://localhost:8000/latest'),
-          fetch('http://localhost:8000/evaluations'),
-        ]);
+      const [latestResult, histResult] = await Promise.allSettled([
+        apiFetch<EvaluationData>('/latest'),
+        apiFetch<EvaluationHistoryEntry[]>('/evaluations'),
+      ]);
 
-        if (latestRes.ok) {
-          const latest = await latestRes.json();
-          setData(latest);
-        }
-        if (historyRes.ok) {
-          const hist = await historyRes.json();
-          setHistory(hist);
-        }
-      } catch {
-        console.error('Connectivity issue with backend engine.');
+      if (latestResult.status === 'fulfilled') {
+        setData(latestResult.value);
+      }
+      if (histResult.status === 'fulfilled') {
+        setHistory(histResult.value);
+        setHasLoadedHistory(true);
+      } else {
+        console.error('Connectivity issue with backend engine.', histResult.reason);
       }
     };
     fetchData();
@@ -55,17 +60,13 @@ export function useEvaluationData({ activeView, onReportLoaded, onError }: UseEv
     async (runId: string) => {
       setIsLoadingReport(true);
       try {
-        const res = await fetch(`http://localhost:8000/evaluations/${runId}`);
-        if (!res.ok) {
-          onError?.('Failed to load report details.');
-          return;
-        }
-        const fullData = await res.json();
+        const fullData = await apiFetch<EvaluationData>(`/evaluations/${runId}`);
         setData(fullData);
         onReportLoaded?.();
       } catch (error) {
         console.error('Error loading report:', error);
-        onError?.('Error connecting to server.');
+        const msg = error instanceof ApiError ? error.message : 'Error connecting to server.';
+        onError?.(msg);
       } finally {
         setIsLoadingReport(false);
       }

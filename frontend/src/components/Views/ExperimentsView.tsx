@@ -28,7 +28,12 @@ export function ExperimentsView({
   requestRecommendationForRow,
   openRecommendationDetail,
 }: ExperimentsViewProps) {
-  const bots = Object.keys(data.summaries || {});
+  // Use leaderboard order (sorted by RQS desc) so the table always matches
+  // the ranking view. Fall back to summaries keys if leaderboard is absent.
+  const bots = (data.leaderboard?.map((l) => l.bot_id).filter(Boolean) as string[])
+    .length > 0
+    ? (data.leaderboard.map((l) => l.bot_id).filter(Boolean) as string[])
+    : Object.keys(data.summaries || {});
   const metricColor = (v: number, threshold: number) => (v >= threshold ? '#10b981' : '#ef4444');
   const inverseMetricColor = (v: number, threshold: number) => {
     const inverseThreshold = Math.max(0, 1 - threshold);
