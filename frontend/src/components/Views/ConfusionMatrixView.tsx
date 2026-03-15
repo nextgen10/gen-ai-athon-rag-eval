@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Chip, Tooltip, alpha } from '@mui/material';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
@@ -16,11 +16,14 @@ interface Props {
 const MotionBox = motion(Box);
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
-const CELL   = 154;  // quadrant cell px
-const COL_H  =  44;  // column header height px
-const ROW_W  =  52;  // row label width px
-const GAP    =   4;  // gap between all grid items px
-const SIDEBAR = 212; // right panel width px
+const CELL         = 200;  // quadrant cell px
+const COL_H        =  52;  // column header height px
+const ROW_W        =  60;  // row label width px
+const GAP          =   4;  // gap between all grid items px
+const AXIS_W       =  28;  // axis label column width px
+const AXIS_LABEL_H =  20;  // axis label row height px
+// total matrix height = predicted label + gap + col headers + gap + 2 rows + gap between rows
+const MATRIX_H = AXIS_LABEL_H + GAP + COL_H + GAP + 2 * CELL + GAP;  // 484px
 
 // ─── Quadrant config ──────────────────────────────────────────────────────────
 const Q = {
@@ -147,30 +150,30 @@ function QuadrantCell({
           bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)',
           borderRadius: 99, px: '8px', py: '2px',
         }}>
-          <Icon size={10} color={color} />
-          <Typography sx={{ fontSize: '0.58rem', fontWeight: 900, color, letterSpacing: 0.8, textTransform: 'uppercase' }}>
+          <Icon size={12} color={color} />
+          <Typography sx={{ fontSize: '0.68rem', fontWeight: 900, color, letterSpacing: 0.8, textTransform: 'uppercase' }}>
             {cfg.short}
           </Typography>
         </Box>
-        <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color, opacity: 0.85 }}>
+        <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color, opacity: 0.85 }}>
           {pct}%
         </Typography>
       </Box>
 
       {/* Big count */}
       <Typography sx={{
-        fontSize: '2.8rem', fontWeight: 900, color,
+        fontSize: '3.6rem', fontWeight: 900, color,
         lineHeight: 1, letterSpacing: '-0.05em',
-        mt: 'auto', mb: 0.5,
+        my: 'auto', width: '100%', textAlign: 'center',
       }}>
         <AnimatedCount target={count} />
       </Typography>
 
       {/* Label + action */}
-      <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color, lineHeight: 1.25 }}>
+      <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color, lineHeight: 1.25, textAlign: 'center', width: '100%' }}>
         {cfg.label}
       </Typography>
-      <Typography sx={{ fontSize: '0.56rem', color, opacity: 0.6, mt: '2px' }}>
+      <Typography sx={{ fontSize: '0.68rem', color, opacity: 0.6, mt: '2px', textAlign: 'center', width: '100%' }}>
         {cfg.action}
       </Typography>
     </MotionBox>
@@ -254,7 +257,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
   });
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', px: 2, pt: 1.5, pb: 2, gap: 1.5 }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', px: 2, pt: 2, pb: 2, gap: 1.5 }}>
 
       {/* ── Controls bar ── */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, gap: 1, flexWrap: 'wrap' }}>
@@ -301,105 +304,140 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
         </Box>
       </Box>
 
-      {/* ── Body ── */}
-      <Box sx={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: `1fr ${SIDEBAR}px`, gap: 2.5 }}>
+      {/* ── Body: Left (matrix) | Middle (stats + rates) | Right (analogy) ── */}
+      <Box sx={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'auto 1fr 300px', gridTemplateRows: 'auto', gap: 2, alignItems: 'flex-start', mt: 3 }}>
 
-        {/* ── Matrix panel (centered) ── */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
+        {/* ── Left: Matrix left-aligned ── */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <Box sx={{ display: 'inline-flex', flexDirection: 'column', gap: `${GAP}px` }}>
 
-            {/* Column headers */}
-            <Box sx={{ display: 'flex', gap: `${GAP}px`, pl: `${ROW_W + GAP}px` }}>
-              {([
-                { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, color: '#34C759', Icon: CheckCircle2 },
-                { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, color: '#FF3B30', Icon: XCircle },
-              ] as const).map(({ label, sub, color, Icon }) => (
-                <Box key={label} sx={{
-                  width: CELL, height: COL_H, flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '6px',
-                  ...axisStyle(color),
-                }}>
-                  <Icon size={13} color={color} />
-                  <Box>
-                    <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: 0.4, lineHeight: 1.2 }}>
-                      {label}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.5rem', color: 'text.disabled', lineHeight: 1.2 }}>
-                      {sub}
-                    </Typography>
+            {/* ── PREDICTED label + column headers ── */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: `${GAP}px`, pl: `${AXIS_W + GAP + ROW_W + GAP}px` }}>
+              {/* Predicted axis label */}
+              <Box sx={{ width: 2 * CELL + GAP, height: AXIS_LABEL_H, display: 'flex', alignItems: 'center' }}>
+                <Typography sx={{ fontSize: '0.85rem', color: 'text.disabled', lineHeight: 1 }}>←</Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(120,120,128,0.3)' }} />
+                <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.1em', mx: '10px', whiteSpace: 'nowrap' }}>
+                  Predicted
+                </Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(120,120,128,0.3)' }} />
+                <Typography sx={{ fontSize: '0.85rem', color: 'text.disabled', lineHeight: 1 }}>→</Typography>
+              </Box>
+              {/* Column headers */}
+              <Box sx={{ display: 'flex', gap: `${GAP}px` }}>
+                {([
+                  { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, color: '#34C759', Icon: CheckCircle2 },
+                  { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, color: '#FF3B30', Icon: XCircle },
+                ] as const).map(({ label, sub, color, Icon }) => (
+                  <Box key={label} sx={{
+                    width: CELL, height: COL_H, flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                    ...axisStyle(color),
+                  }}>
+                    <Icon size={13} color={color} />
+                    <Box>
+                      <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: 0.4, lineHeight: 1.2 }}>
+                        {label}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.62rem', color: 'text.disabled', lineHeight: 1.2 }}>
+                        {sub}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              ))}
-            </Box>
-
-            {/* Data rows */}
-            {([
-              {
-                label: 'Good', sub: `recall ≥ ${fmt(e.thresholds.context_recall)}`,
-                color: '#34C759', Icon: TrendingUp,
-                cells: [
-                  { q: 'TP' as const, count: e.matrix.TP, delay: 0.05 },
-                  { q: 'FN' as const, count: e.matrix.FN, delay: 0.1 },
-                ],
-              },
-              {
-                label: 'Poor', sub: `recall < ${fmt(e.thresholds.context_recall)}`,
-                color: '#FF3B30', Icon: TrendingDown,
-                cells: [
-                  { q: 'FP' as const, count: e.matrix.FP, delay: 0.15 },
-                  { q: 'TN' as const, count: e.matrix.TN, delay: 0.2 },
-                ],
-              },
-            ]).map(({ label, sub, color, Icon, cells }) => (
-              <Box key={label} sx={{ display: 'flex', gap: `${GAP}px`, alignItems: 'center' }}>
-                {/* Row label */}
-                <Box sx={{
-                  width: ROW_W, height: CELL, flexShrink: 0,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: '6px',
-                  ...axisStyle(color),
-                }}>
-                  <Box sx={{ transform: 'rotate(-90deg)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                    <Icon size={12} color={color} />
-                    <Typography sx={{ fontSize: '0.58rem', fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: 0.5, whiteSpace: 'nowrap' }}>
-                      {label}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.48rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
-                      {sub}
-                    </Typography>
-                  </Box>
-                </Box>
-                {/* Cells */}
-                {cells.map(({ q, count, delay }) => (
-                  <QuadrantCell key={q} q={q} count={count} pct={pct(count)} mode={mode} delay={delay} />
                 ))}
               </Box>
-            ))}
+            </Box>
+
+            {/* ── ACTUAL label + data rows ── */}
+            <Box sx={{ display: 'flex', gap: `${GAP}px` }}>
+              {/* Actual axis label */}
+              <Box sx={{ width: AXIS_W, height: 2 * CELL + GAP, flexShrink: 0, position: 'relative' }}>
+                <Box sx={{
+                  position: 'absolute', top: '50%', left: '50%',
+                  width: 2 * CELL + GAP,
+                  transform: 'translate(-50%, -50%) rotate(-90deg)',
+                  display: 'flex', alignItems: 'center',
+                }}>
+                  <Typography sx={{ fontSize: '0.85rem', color: 'text.disabled', lineHeight: 1 }}>←</Typography>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(120,120,128,0.3)' }} />
+                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.1em', mx: '10px', whiteSpace: 'nowrap' }}>
+                    Actual
+                  </Typography>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(120,120,128,0.3)' }} />
+                  <Typography sx={{ fontSize: '0.85rem', color: 'text.disabled', lineHeight: 1 }}>→</Typography>
+                </Box>
+              </Box>
+              {/* Rows */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: `${GAP}px` }}>
+                {([
+                  {
+                    label: 'Good', sub: `recall ≥ ${fmt(e.thresholds.context_recall)}`,
+                    color: '#34C759', Icon: TrendingUp,
+                    cells: [
+                      { q: 'TP' as const, count: e.matrix.TP, delay: 0.05 },
+                      { q: 'FN' as const, count: e.matrix.FN, delay: 0.1 },
+                    ],
+                  },
+                  {
+                    label: 'Poor', sub: `recall < ${fmt(e.thresholds.context_recall)}`,
+                    color: '#FF3B30', Icon: TrendingDown,
+                    cells: [
+                      { q: 'FP' as const, count: e.matrix.FP, delay: 0.15 },
+                      { q: 'TN' as const, count: e.matrix.TN, delay: 0.2 },
+                    ],
+                  },
+                ]).map(({ label, sub, color, Icon, cells }) => (
+                  <Box key={label} sx={{ display: 'flex', gap: `${GAP}px`, alignItems: 'center' }}>
+                    {/* Row label */}
+                    <Box sx={{
+                      width: ROW_W, height: CELL, flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      ...axisStyle(color),
+                    }}>
+                      <Box sx={{ transform: 'rotate(-90deg)', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '6px' }}>
+                        <Icon size={13} color={color} />
+                        <Box>
+                          <Typography sx={{ fontSize: '0.75rem', fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: 0.4, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                            {label}
+                          </Typography>
+                          <Typography sx={{ fontSize: '0.62rem', color: 'text.disabled', lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                            {sub}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                    {/* Cells */}
+                    {cells.map(({ q, count, delay }) => (
+                      <QuadrantCell key={q} q={q} count={count} pct={pct(count)} mode={mode} delay={delay} />
+                    ))}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
 
           </Box>
         </Box>
 
-        {/* ── Right sidebar ── */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, minHeight: 0, overflow: 'hidden' }}>
+        {/* ── Middle: Stats + Pass rates ── */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, height: MATRIX_H, minHeight: 0 }}>
 
-          {/* Stats */}
-          <Box sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px', p: 1.5, flexShrink: 0, backdropFilter: 'blur(12px)' }}>
-            <Typography sx={{ fontSize: '0.58rem', fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.07em', mb: 1 }}>
+          {/* Classification Stats */}
+          <Box sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px', p: 1.5, backdropFilter: 'blur(12px)' }}>
+            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 1 }}>
               Classification Stats
             </Typography>
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.75 }}>
               {statItems.map(({ label, value, color }) => (
                 <Box key={label} sx={{
-                  borderRadius: '10px', py: '10px', px: 1,
+                  borderRadius: '10px', py: '12px', px: 1,
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
                   bgcolor: dark ? alpha(color, 0.12) : alpha(color, 0.07),
                   border: `1px solid ${dark ? alpha(color, 0.28) : alpha(color, 0.18)}`,
                 }}>
-                  <Typography sx={{ fontSize: '1.15rem', fontWeight: 900, color, lineHeight: 1, letterSpacing: '-0.03em' }}>
+                  <Typography sx={{ fontSize: '1.4rem', fontWeight: 900, color, lineHeight: 1, letterSpacing: '-0.03em' }}>
                     {value}
                   </Typography>
-                  <Typography sx={{ fontSize: '0.5rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.07em', mt: 0.4 }}>
+                  <Typography sx={{ fontSize: '0.52rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.07em', mt: 0.5 }}>
                     {label}
                   </Typography>
                 </Box>
@@ -407,69 +445,91 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
             </Box>
           </Box>
 
-          {/* Pass rates */}
-          <Box sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px', p: 1.5, flexShrink: 0, backdropFilter: 'blur(12px)' }}>
-            <Typography sx={{ fontSize: '0.58rem', fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.07em', mb: 1 }}>
+          {/* Pass Rate by Metric */}
+          <Box sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px', p: 1.5, backdropFilter: 'blur(12px)', flex: 1, minHeight: 0 }}>
+            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 1 }}>
               Pass Rate by Metric
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {METRICS.map(({ key, label, color }, i) => (
-                <MetricRow
-                  key={key} label={label}
-                  rate={e.pass_rates[key] ?? 0}
-                  color={color} dark={dark}
-                  delay={0.1 + i * 0.04}
-                />
+                <MetricRow key={key} label={label} rate={e.pass_rates[key] ?? 0} color={color} dark={dark} delay={0.1 + i * 0.04} />
               ))}
             </Box>
-            <Box sx={{ display: 'flex', gap: 1.25, mt: 1.25, pt: 1, borderTop: `1px solid ${divider}` }}>
+            <Box sx={{ display: 'flex', gap: 1.5, mt: 1.25, pt: 1, borderTop: `1px solid ${divider}` }}>
               {[{ c: '#34C759', l: '≥ 80%' }, { c: '#FF9500', l: '60–79%' }, { c: '#FF3B30', l: '< 60%' }].map(({ c, l }) => (
-                <Box key={l} sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Box sx={{ width: 6, height: 6, borderRadius: 99, bgcolor: c, flexShrink: 0 }} />
-                  <Typography sx={{ fontSize: '0.52rem', color: 'text.secondary' }}>{l}</Typography>
+                <Box key={l} sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <Box sx={{ width: 7, height: 7, borderRadius: 99, bgcolor: c, flexShrink: 0 }} />
+                  <Typography sx={{ fontSize: '0.55rem', color: 'text.secondary' }}>{l}</Typography>
                 </Box>
               ))}
             </Box>
           </Box>
 
-          {/* Restaurant analogy */}
-          <Box sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px', p: 1.5, flexShrink: 0, backdropFilter: 'blur(12px)' }}>
-            <Typography sx={{ fontSize: '0.58rem', fontWeight: 700, color: '#AF52DE', textTransform: 'uppercase', letterSpacing: '0.07em', mb: 0.75 }}>
-              🍽️ Restaurant Analogy
-            </Typography>
-            <Typography sx={{ fontSize: '0.58rem', color: 'text.secondary', mb: 1 }}>
-              <b style={{ color: dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)' }}>Waiter</b> = retrieval &nbsp;·&nbsp;
-              <b style={{ color: dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)' }}>Chef</b> = LLM
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {(Object.keys(Q) as Array<keyof typeof Q>).map((k) => {
-                const cfg = Q[k];
-                const Icon = cfg.icon;
-                const color = cfg.color[mode];
-                return (
-                  <Box key={k} sx={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <Box sx={{
-                      width: 20, height: 20, borderRadius: '6px', flexShrink: 0,
-                      bgcolor: dark ? alpha(color, 0.18) : alpha(color, 0.1),
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <Icon size={11} color={color} />
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color, lineHeight: 1.25 }}>
-                        {cfg.short} · {cfg.analogy}
-                      </Typography>
-                      <Typography sx={{ fontSize: '0.54rem', color: 'text.secondary', lineHeight: 1.3 }}>
-                        {cfg.action}
-                      </Typography>
-                    </Box>
-                  </Box>
-                );
-              })}
-            </Box>
-          </Box>
-
         </Box>
+
+        {/* ── Right: Restaurant Analogy ── */}
+        <Box sx={{
+          bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: '14px',
+          p: 2, backdropFilter: 'blur(12px)', height: MATRIX_H, overflow: 'hidden',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Header */}
+          <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#AF52DE', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 0.5 }}>
+            Restaurant Analogy
+          </Typography>
+          <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', lineHeight: 1.55, mb: 1.5 }}>
+            Think of RAG as a restaurant:{' '}
+            <b style={{ color: dark ? 'rgba(235,235,245,0.85)' : 'rgba(60,60,67,0.85)' }}>the waiter</b> fetches the right
+            context (retrieval), and <b style={{ color: dark ? 'rgba(235,235,245,0.85)' : 'rgba(60,60,67,0.85)' }}>the chef</b>{' '}
+            turns it into a great answer (LLM generation). Each quadrant tells you which role failed.
+          </Typography>
+
+          {/* Divider */}
+          <Box sx={{ height: '1px', bgcolor: divider, mb: 1.5 }} />
+
+          {/* Quadrant items — flex: 1 so they fill remaining height evenly */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, flex: 1 }}>
+            {(Object.keys(Q) as Array<keyof typeof Q>).map((k) => {
+              const cfg = Q[k];
+              const Icon = cfg.icon;
+              const color = cfg.color[mode];
+              return (
+                <Box key={k} sx={{
+                  display: 'flex', gap: '12px', alignItems: 'flex-start', flex: 1,
+                  p: 1.25, borderRadius: '10px',
+                  bgcolor: dark ? alpha(color, 0.07) : alpha(color, 0.04),
+                  border: `1px solid ${dark ? alpha(color, 0.18) : alpha(color, 0.12)}`,
+                }}>
+                  <Box sx={{
+                    width: 30, height: 30, borderRadius: '9px', flexShrink: 0,
+                    bgcolor: dark ? alpha(color, 0.22) : alpha(color, 0.13),
+                    border: `1px solid ${dark ? alpha(color, 0.35) : alpha(color, 0.25)}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Icon size={15} color={color} />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', mb: '3px' }}>
+                      <Typography sx={{ fontSize: '0.7rem', fontWeight: 800, color, letterSpacing: '-0.01em' }}>
+                        {cfg.short}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.62rem', fontWeight: 600, color: 'text.secondary' }}>
+                        {cfg.label}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontSize: '0.65rem', fontWeight: 600, color, opacity: 0.9, lineHeight: 1.35, mb: '3px' }}>
+                      "{cfg.analogy}"
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.6rem', color: 'text.secondary', lineHeight: 1.4 }}>
+                      → {cfg.action}
+                    </Typography>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+
       </Box>
     </Box>
   );

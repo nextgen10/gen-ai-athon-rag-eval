@@ -402,6 +402,66 @@ export function AboutView() {
             </Box>
           </Box>
 
+          {/* ── Pass Rate by Metric ── */}
+          <Box sx={{ mt: 1, mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 8, height: 24, bgcolor: '#007AFF', borderRadius: 1 }} />
+              Pass Rate by Metric
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.75, maxWidth: 640 }}>
+              For each metric, pass rate measures the fraction of <strong>all</strong> test cases (including those without ground truth) where the score meets
+              or exceeds the configured threshold.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 640, fontFamily: 'monospace', fontSize: '0.8rem',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+              px: 1.5, py: 1, borderRadius: 2, display: 'inline-block',
+            }}>
+              pass_rate = cases where score ≥ threshold / total_cases
+            </Typography>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 1.5, mb: 2.5 }}>
+              {[
+                { label: 'RQS', color: '#007AFF', note: 'Composite production score. Passes when RQS ≥ threshold.' },
+                { label: 'Faithfulness', color: '#AF52DE', note: 'Fraction of answer claims supported by retrieved context.' },
+                { label: 'Answer Correctness', color: '#34C759', note: 'LLM-judged factual alignment with ground truth.' },
+                { label: 'Answer Relevancy', color: '#5AC8FA', note: 'LLM-judged how directly the answer addresses the question.' },
+                { label: 'Context Recall', color: '#FF9500', note: 'Coverage of reference claims in retrieved context.' },
+                { label: 'Context Precision', color: '#FF2D55', note: 'Signal quality — how much retrieved context is relevant.' },
+              ].map(({ label, color, note }) => (
+                <Paper key={label} sx={{
+                  p: 2, borderRadius: 2.5,
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                  bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { borderColor: color, boxShadow: `0 6px 24px -6px ${color}44`, transform: 'translateY(-2px)' },
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
+                    <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', color }}>{label}</Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', lineHeight: 1.5 }}>{note}</Typography>
+                </Paper>
+              ))}
+            </Box>
+
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <strong>Colour coding</strong> in the pass rate bars follows a traffic-light scheme:
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              {[
+                { color: '#34C759', label: '≥ 80%', desc: 'Healthy' },
+                { color: '#FF9500', label: '60 – 79%', desc: 'Needs attention' },
+                { color: '#FF3B30', label: '< 60%', desc: 'Critical' },
+              ].map(({ color, label, desc }) => (
+                <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: 12, height: 12, borderRadius: 99, bgcolor: color, flexShrink: 0 }} />
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color }}>{label}</Typography>
+                  <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>— {desc}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
           <MetricExplanationCard
             title="Hallucination Risk"
             description="Derived safety metric shown in Experiments for quick red/green risk interpretation."
