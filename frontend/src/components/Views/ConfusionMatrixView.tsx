@@ -334,20 +334,20 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           {/* Row 1: Good retrieval */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
             <Box sx={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1.25,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
               border: `1px solid ${dark ? 'rgba(52,211,153,0.2)' : 'rgba(5,150,105,0.15)'}`,
-              borderRadius: 2,
+              borderRadius: 2, overflow: 'hidden',
             }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, transform: 'rotate(-90deg)' }}>
                 <TrendingUp size={12} color="#059669" />
-                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: 0.4 }}>
-                  Good
+                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
+                  Good retrieval
+                </Typography>
+                <Typography sx={{ fontSize: '0.55rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
+                  recall ≥ {fmt(e.thresholds.context_recall)}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', lineHeight: 1.4 }}>
-                recall ≥ {fmt(e.thresholds.context_recall)}
-              </Typography>
             </Box>
             <QuadrantCell q="TP" count={e.matrix.TP} pct={pct(e.matrix.TP)} themeMode={themeMode} delay={0.05} />
             <QuadrantCell q="FN" count={e.matrix.FN} pct={pct(e.matrix.FN)} themeMode={themeMode} delay={0.1} />
@@ -356,20 +356,20 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           {/* Row 2: Poor retrieval */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
             <Box sx={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1.25,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
               border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.15)'}`,
-              borderRadius: 2,
+              borderRadius: 2, overflow: 'hidden',
             }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, transform: 'rotate(-90deg)' }}>
                 <TrendingDown size={12} color="#dc2626" />
-                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: 0.4 }}>
-                  Poor
+                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
+                  Poor retrieval
+                </Typography>
+                <Typography sx={{ fontSize: '0.55rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
+                  recall {'<'} {fmt(e.thresholds.context_recall)}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', lineHeight: 1.4 }}>
-                recall {'<'} {fmt(e.thresholds.context_recall)}
-              </Typography>
             </Box>
             <QuadrantCell q="FP" count={e.matrix.FP} pct={pct(e.matrix.FP)} themeMode={themeMode} delay={0.15} />
             <QuadrantCell q="TN" count={e.matrix.TN} pct={pct(e.matrix.TN)} themeMode={themeMode} delay={0.2} />
