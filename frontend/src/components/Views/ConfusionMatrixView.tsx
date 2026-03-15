@@ -61,12 +61,12 @@ const Q = {
 } as const;
 
 const METRICS = [
-  { key: 'rqs',                label: 'RQS',             color: '#3b82f6' },
-  { key: 'faithfulness',       label: 'Faithfulness',    color: '#8b5cf6' },
-  { key: 'answer_correctness', label: 'Correctness',     color: '#10b981' },
-  { key: 'answer_relevancy',   label: 'Relevancy',       color: '#06b6d4' },
-  { key: 'context_recall',     label: 'Ctx Recall',      color: '#f59e0b' },
-  { key: 'context_precision',  label: 'Ctx Precision',   color: '#ec4899' },
+  { key: 'rqs',                label: 'RQS',             color: '#007AFF' },
+  { key: 'faithfulness',       label: 'Faithfulness',    color: '#AF52DE' },
+  { key: 'answer_correctness', label: 'Correctness',     color: '#34C759' },
+  { key: 'answer_relevancy',   label: 'Relevancy',       color: '#5AC8FA' },
+  { key: 'context_recall',     label: 'Ctx Recall',      color: '#FF9500' },
+  { key: 'context_precision',  label: 'Ctx Precision',   color: '#FF2D55' },
 ];
 
 // ─── AnimatedCount ────────────────────────────────────────────────────────────
@@ -156,7 +156,7 @@ function MetricBar({ label, rate, color, themeMode, delay }: {
   label: string; rate: number; color: string; themeMode: 'light' | 'dark'; delay: number;
 }) {
   const pct = Math.round(rate * 100);
-  const barColor = pct >= 80 ? color : pct >= 60 ? '#f59e0b' : '#ef4444';
+  const barColor = pct >= 80 ? color : pct >= 60 ? '#FF9500' : '#FF3B30';
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.4 }}>
@@ -205,7 +205,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
   const dark = themeMode === 'dark';
   const surfBg = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
   const surfBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
-  const statColors = ['#6366f1', '#06b6d4', '#8b5cf6', '#10b981'];
+  const statColors = ['#AF52DE', '#5AC8FA', '#BF5AF2', '#34C759'];
   const statItems = [
     { label: 'Precision', value: e.precision.toFixed(2) },
     { label: 'Recall',    value: e.recall.toFixed(2) },
@@ -223,10 +223,10 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
             <Box key={bid} onClick={() => setSelectedBot(i)} sx={{
               px: 1.5, py: 0.4, borderRadius: 99, cursor: 'pointer', fontWeight: 700,
               fontSize: '0.75rem', transition: 'all 0.18s',
-              bgcolor: selectedBot === i ? '#2563eb' : (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'),
+              bgcolor: selectedBot === i ? '#007AFF' : (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'),
               color: selectedBot === i ? '#fff' : 'text.secondary',
-              border: `1px solid ${selectedBot === i ? '#2563eb' : 'transparent'}`,
-              '&:hover': { borderColor: '#2563eb', color: selectedBot === i ? '#fff' : '#2563eb' },
+              border: `1px solid ${selectedBot === i ? '#007AFF' : 'transparent'}`,
+              '&:hover': { borderColor: '#007AFF', color: selectedBot === i ? '#fff' : '#007AFF' },
             }}>
               {bid}
             </Box>
@@ -234,7 +234,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
         </Box>
         <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
           <Chip label={`${e.total_cases} total`} size="small"
-            sx={{ fontSize: '0.68rem', height: 22, bgcolor: dark ? 'rgba(37,99,235,0.15)' : 'rgba(37,99,235,0.08)', color: '#2563eb', fontWeight: 700 }} />
+            sx={{ fontSize: '0.68rem', height: 22, bgcolor: dark ? 'rgba(0,122,255,0.15)' : 'rgba(0,122,255,0.08)', color: '#007AFF', fontWeight: 700 }} />
           <Chip label={`${e.measured_cases} measured`} size="small" sx={{ fontSize: '0.68rem', height: 22 }} />
           {e.skipped_no_gt > 0 && (
             <Tooltip title={`${e.skipped_no_gt} case(s) excluded — no ground truth.`} arrow>
@@ -364,7 +364,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
               ))}
             </Box>
             <Box sx={{ display: 'flex', gap: 1.5, mt: 1.25, pt: 1, borderTop: `1px solid ${surfBorder}` }}>
-              {[{ c: '#10b981', l: '≥ 80%' }, { c: '#f59e0b', l: '60–79%' }, { c: '#ef4444', l: '< 60%' }].map(({ c, l }) => (
+              {[{ c: '#34C759', l: '≥ 80%' }, { c: '#FF9500', l: '60–79%' }, { c: '#FF3B30', l: '< 60%' }].map(({ c, l }) => (
                 <Box key={l} sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
                   <Box sx={{ width: 6, height: 6, borderRadius: 99, bgcolor: c }} />
                   <Typography sx={{ fontSize: '0.58rem', color: 'text.secondary' }}>{l}</Typography>
@@ -375,12 +375,12 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
 
           {/* Analogy */}
           <Box sx={{ bgcolor: surfBg, border: `1px solid ${surfBorder}`, borderRadius: 2.5, p: 1.5, flexShrink: 0 }}>
-            <Typography variant="overline" sx={{ fontSize: '0.6rem', color: '#6366f1', display: 'block', mb: 0.75 }}>
+            <Typography variant="overline" sx={{ fontSize: '0.6rem', color: '#AF52DE', display: 'block', mb: 0.75 }}>
               🍽️ Restaurant Analogy
             </Typography>
             <Typography sx={{ fontSize: '0.63rem', color: 'text.secondary', mb: 1 }}>
-              <b style={{ color: dark ? '#94a3b8' : '#475569' }}>Waiter</b> = retrieval &nbsp;·&nbsp;
-              <b style={{ color: dark ? '#94a3b8' : '#475569' }}>Chef</b> = LLM generation
+              <b style={{ color: '#8E8E93' }}>Waiter</b> = retrieval &nbsp;·&nbsp;
+              <b style={{ color: '#8E8E93' }}>Chef</b> = LLM generation
             </Typography>
             {(Object.keys(Q) as Array<keyof typeof Q>).map((k) => {
               const cfg = Q[k];

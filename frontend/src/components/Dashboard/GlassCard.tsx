@@ -31,10 +31,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({ title, value, color: initi
                 height: '100%',
                 background: (theme) => {
                     const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                         : initialColor;
                     return theme.palette.mode === 'dark'
-                        ? `linear-gradient(135deg, ${alpha(displayColor, 0.05)} 0%, ${alpha('#0f172a', 0.4)} 100%)`
+                        ? `linear-gradient(135deg, ${alpha(displayColor, 0.05)} 0%, ${alpha('#1C1C1E', 0.4)} 100%)`
                         : `linear-gradient(135deg, ${alpha(displayColor, 0.05)} 0%, ${alpha('#ffffff', 0.95)} 100%)`;
                 },
                 backdropFilter: 'blur(30px)',
@@ -44,7 +44,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({ title, value, color: initi
                 borderRadius: 2,
                 boxShadow: (theme) => {
                     const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                         : initialColor;
                     return `0 10px 30px ${theme.palette.mode === 'dark' ? alpha(displayColor, 0.35) : alpha(displayColor, 0.1)}`;
                 },
@@ -84,24 +84,24 @@ export const GlassCard: React.FC<GlassCardProps> = ({ title, value, color: initi
                 <Avatar sx={{
                     bgcolor: (theme) => {
                         const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                             : initialColor;
                         return alpha(displayColor, 0.1);
                     },
                     color: (theme) => (initialColor === '#ffffff' || initialColor === '#fff')
-                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                        ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                         : initialColor,
                     width: 36,
                     height: 36,
                     border: (theme) => {
                         const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                             : initialColor;
                         return `1px solid ${alpha(displayColor, 0.2)}`;
                     },
                     boxShadow: (theme) => {
                         const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                            ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                             : initialColor;
                         return `0 0 10px ${alpha(displayColor, 0.2)}`;
                     },
@@ -116,13 +116,13 @@ export const GlassCard: React.FC<GlassCardProps> = ({ title, value, color: initi
                         variant="caption"
                         sx={{
                             color: (theme) => (initialColor === '#ffffff' || initialColor === '#fff')
-                                ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                                ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                                 : initialColor,
                             fontWeight: 900,
                             fontSize: '0.7rem',
                             bgcolor: (theme) => {
                                 const displayColor = (initialColor === '#ffffff' || initialColor === '#fff')
-                                    ? (theme.palette.mode === 'dark' ? '#ffffff' : '#2563eb')
+                                    ? (theme.palette.mode === 'dark' ? '#ffffff' : '#007AFF')
                                     : initialColor;
                                 return alpha(displayColor, 0.1);
                             },

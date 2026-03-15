@@ -34,12 +34,12 @@ export function ExperimentsView({
     .length > 0
     ? (data.leaderboard.map((l) => l.bot_id).filter(Boolean) as string[])
     : Object.keys(data.summaries || {});
-  const metricColor = (v: number, threshold: number) => (v >= threshold ? '#10b981' : '#ef4444');
+  const metricColor = (v: number, threshold: number) => (v >= threshold ? '#34C759' : '#FF3B30');
   const inverseMetricColor = (v: number, threshold: number) => {
     const inverseThreshold = Math.max(0, 1 - threshold);
-    return v <= inverseThreshold ? '#10b981' : '#ef4444';
+    return v <= inverseThreshold ? '#34C759' : '#FF3B30';
   };
-  const toxicityColor = (v: number) => (v <= 0.1 ? '#10b981' : '#ef4444');
+  const toxicityColor = (v: number) => (v <= 0.1 ? '#34C759' : '#FF3B30');
   const metricCellStyle = (enabled: boolean, activeColor: string, weight = 700) => ({
     color: enabled ? activeColor : 'text.disabled',
     fontWeight: enabled ? weight : 600,
@@ -86,17 +86,15 @@ export function ExperimentsView({
           overflow: 'auto',
           '&::-webkit-scrollbar': { width: 8, height: 8 },
           '&::-webkit-scrollbar-track': {
-            background: (t: Theme) => (t.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(15,23,42,0.06)'),
+            background: 'transparent',
             borderRadius: 10,
           },
           '&::-webkit-scrollbar-thumb': {
-            background: (t: Theme) => (t.palette.mode === 'dark' ? 'rgba(37,99,235,0.35)' : 'rgba(37,99,235,0.45)'),
+            background: (t: Theme) => (t.palette.mode === 'dark' ? 'rgba(120,120,128,0.3)' : 'rgba(120,120,128,0.3)'),
             borderRadius: 10,
-            border: (t: Theme) => (t.palette.mode === 'dark' ? 'none' : '2px solid rgba(255,255,255,0.75)'),
-            backgroundClip: 'padding-box',
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            background: (t: Theme) => (t.palette.mode === 'dark' ? 'rgba(37,99,235,0.55)' : 'rgba(37,99,235,0.65)'),
+            background: (t: Theme) => (t.palette.mode === 'dark' ? 'rgba(120,120,128,0.5)' : 'rgba(120,120,128,0.5)'),
           },
         }}
       >

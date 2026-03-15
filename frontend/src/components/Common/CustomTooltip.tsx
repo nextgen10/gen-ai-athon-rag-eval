@@ -34,7 +34,7 @@ export function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       </Typography>
       {payload.map((p, idx) => (
         <Box key={`${p.name || 'metric'}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: p.color || '#2563eb' }} />
+          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: p.color || '#007AFF' }} />
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             {p.name || 'metric'}:
           </Typography>

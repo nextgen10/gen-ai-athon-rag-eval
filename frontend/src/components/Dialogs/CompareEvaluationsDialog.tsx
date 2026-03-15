@@ -80,13 +80,11 @@ export function CompareEvaluationsDialog({
           '&::-webkit-scrollbar': { width: '8px' },
           '&::-webkit-scrollbar-track': { background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.03)') },
           '&::-webkit-scrollbar-thumb': {
-            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.25)' : 'rgba(37, 99, 235, 0.15)'),
+            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.3)' : 'rgba(120,120,128,0.3)'),
             borderRadius: '10px',
-            border: (theme) => (theme.palette.mode === 'dark' ? '2px solid rgba(15, 23, 42, 0.8)' : '2px solid rgba(255, 255, 255, 0.9)'),
-            backgroundClip: 'padding-box',
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.4)' : 'rgba(37, 99, 235, 0.3)'),
+            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.5)' : 'rgba(120,120,128,0.5)'),
           },
         }}
       >
@@ -165,7 +163,7 @@ export function CompareEvaluationsDialog({
                           <strong>Date:</strong> {eval1.timestamp ? new Date(eval1.timestamp).toLocaleString() : 'N/A'}
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          <strong>Winner:</strong> <span style={{ color: '#10b981', fontWeight: 700 }}>{eval1.winner}</span>
+                          <strong>Winner:</strong> <span style={{ color: '#34C759', fontWeight: 700 }}>{eval1.winner}</span>
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                           <strong>Models:</strong> {Object.keys(eval1.summaries || {}).join(', ')}
@@ -174,7 +172,7 @@ export function CompareEvaluationsDialog({
                     </Paper>
                   </Grid>
                   <Grid size={{ xs: 6 }}>
-                    <Paper sx={{ p: 2.5, bgcolor: 'rgba(236, 72, 153, 0.1)', border: '1px solid rgba(236, 72, 153, 0.3)', borderRadius: 2 }}>
+                    <Paper sx={{ p: 2.5, bgcolor: 'rgba(255,45,85,0.08)', border: '1px solid rgba(255,45,85,0.25)', borderRadius: 2 }}>
                       <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.5, textTransform: 'uppercase', fontWeight: 700 }}>
                         Evaluation 2
                       </Typography>
@@ -184,7 +182,7 @@ export function CompareEvaluationsDialog({
                           <strong>Date:</strong> {eval2.timestamp ? new Date(eval2.timestamp).toLocaleString() : 'N/A'}
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          <strong>Winner:</strong> <span style={{ color: '#10b981', fontWeight: 700 }}>{eval2.winner}</span>
+                          <strong>Winner:</strong> <span style={{ color: '#34C759', fontWeight: 700 }}>{eval2.winner}</span>
                         </Typography>
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                           <strong>Models:</strong> {Object.keys(eval2.summaries || {}).join(', ')}
@@ -208,10 +206,10 @@ export function CompareEvaluationsDialog({
                     <TableHead>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 800, color: 'text.secondary', fontSize: '0.7rem', textTransform: 'uppercase' }}>Metric</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800, color: '#3b82f6', fontSize: '0.7rem', textTransform: 'uppercase' }}>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: '#007AFF', fontSize: '0.7rem', textTransform: 'uppercase' }}>
                           Eval 1
                         </TableCell>
-                        <TableCell align="center" sx={{ fontWeight: 800, color: '#ec4899', fontSize: '0.7rem', textTransform: 'uppercase' }}>
+                        <TableCell align="center" sx={{ fontWeight: 800, color: '#FF2D55', fontSize: '0.7rem', textTransform: 'uppercase' }}>
                           Eval 2
                         </TableCell>
                         <TableCell align="center" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: '0.7rem', textTransform: 'uppercase' }}>
@@ -234,7 +232,7 @@ export function CompareEvaluationsDialog({
                             <TableCell sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{metric.label}</TableCell>
                             <TableCell
                               align="center"
-                              sx={{ fontWeight: 700, color: isPositive ? '#10b981' : 'text.primary', bgcolor: isPositive ? 'rgba(16, 185, 129, 0.1)' : 'transparent' }}
+                              sx={{ fontWeight: 700, color: isPositive ? '#34C759' : 'text.primary', bgcolor: isPositive ? 'rgba(52,199,89,0.1)' : 'transparent' }}
                             >
                               {metric.format(val1)}
                               {isPositive && <Trophy size={14} style={{ marginLeft: 4, verticalAlign: 'middle' }} />}
@@ -243,8 +241,8 @@ export function CompareEvaluationsDialog({
                               align="center"
                               sx={{
                                 fontWeight: 700,
-                                color: !isPositive && diff !== 0 ? '#10b981' : 'text.primary',
-                                bgcolor: !isPositive && diff !== 0 ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+                                color: !isPositive && diff !== 0 ? '#34C759' : 'text.primary',
+                                bgcolor: !isPositive && diff !== 0 ? 'rgba(52,199,89,0.1)' : 'transparent',
                               }}
                             >
                               {metric.format(val2)}
@@ -257,8 +255,8 @@ export function CompareEvaluationsDialog({
                                 sx={{
                                   fontWeight: 700,
                                   fontSize: '0.7rem',
-                                  bgcolor: diff > 0 ? 'rgba(16, 185, 129, 0.2)' : diff < 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 116, 139, 0.2)',
-                                  color: diff > 0 ? '#10b981' : diff < 0 ? '#ef4444' : '#64748b',
+                                  bgcolor: diff > 0 ? 'rgba(52,199,89,0.15)' : diff < 0 ? 'rgba(255,59,48,0.15)' : 'rgba(142,142,147,0.15)',
+                                  color: diff > 0 ? '#34C759' : diff < 0 ? '#FF3B30' : '#8E8E93',
                                 }}
                               />
                             </TableCell>
@@ -282,16 +280,15 @@ export function CompareEvaluationsDialog({
             textTransform: 'none',
             fontWeight: 700,
             fontSize: '0.85rem',
-            background: '#e11d48',
+            background: '#FF3B30',
             backdropFilter: 'blur(10px)',
             color: '#fff',
             border: 'none',
-            boxShadow: '0 4px 12px rgba(225, 29, 72, 0.3)',
+            boxShadow: 'none',
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             '&:hover': {
-              background: '#be123c',
-              boxShadow: '0 6px 20px rgba(225, 29, 72, 0.45)',
-              transform: 'translateY(-2px)',
+              background: '#FF453A',
+              boxShadow: 'none',
               color: '#fff',
             },
           }}
@@ -310,16 +307,15 @@ export function CompareEvaluationsDialog({
                   textTransform: 'none',
                   fontWeight: 700,
                   fontSize: '0.85rem',
-                  background: '#2563eb',
+                  background: '#007AFF',
                   backdropFilter: 'blur(10px)',
                   color: '#fff',
                   border: 'none',
-                  boxShadow: (theme) => (theme.palette.mode === 'dark' ? '0 4px 20px rgba(37, 99, 235, 0.3)' : '0 4px 12px rgba(37, 99, 235, 0.2)'),
+                  boxShadow: 'none',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    background: '#1d4ed8',
-                    transform: 'translateY(-2px)',
-                    boxShadow: (theme) => (theme.palette.mode === 'dark' ? '0 8px 30px rgba(37, 99, 235, 0.45)' : '0 6px 20px rgba(37, 99, 235, 0.3)'),
+                    background: '#0056B3',
+                    boxShadow: 'none',
                     color: '#fff',
                   },
                   '&.Mui-disabled': {

@@ -896,14 +896,14 @@ function EnterpriseDashboardContent() {
                       </Typography>
                     )}
                     <Box sx={{ position: 'relative', width: 300 }}>
-                      <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', width: 16, height: 16 }} />
+                      <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#8E8E93', width: 16, height: 16 }} />
                       <input
                         placeholder="Search history..."
                         value={historySearch}
                         onChange={(e) => { setHistorySearch(e.target.value); setHistoryPage(1); }}
                         style={{
                           width: '100%',
-                          backgroundColor: themeMode === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                          backgroundColor: themeMode === 'dark' ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.8)',
                           border: `1px solid ${theme.palette.divider}`,
                           borderRadius: '10px',
                           padding: '10px 12px 10px 38px',
@@ -923,22 +923,16 @@ function EnterpriseDashboardContent() {
                         textTransform: 'none',
                         fontWeight: 900,
                         fontSize: '0.8rem',
-                        background: '#2563eb',
+                        background: themeMode === 'dark' ? '#0A84FF' : '#007AFF',
                         backdropFilter: 'blur(10px)',
                         color: '#fff',
                         border: (theme) => theme.palette.mode === 'dark'
                           ? '1px solid rgba(255, 255, 255, 0.2)'
                           : '1px solid rgba(0, 0, 0, 0.15)',
-                        boxShadow: (theme) => theme.palette.mode === 'dark'
-                          ? '0 4px 20px rgba(37, 99, 235, 0.3)'
-                          : '0 4px 12px rgba(37, 99, 235, 0.2)',
+                        boxShadow: 'none',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         '&:hover': {
-                          background: '#1d4ed8',
-                          transform: 'translateY(-2px)',
-                          boxShadow: (theme) => theme.palette.mode === 'dark'
-                            ? '0 8px 30px rgba(37, 99, 235, 0.45)'
-                            : '0 6px 20px rgba(37, 99, 235, 0.3)',
+                          background: themeMode === 'dark' ? '#409CFF' : '#0056B3',
                           color: '#fff',
                         }
                       }}
@@ -966,11 +960,11 @@ function EnterpriseDashboardContent() {
                     <Chip
                       label={`BATCH LOAD: ${data?.test_cases?.length || 0} QUESTIONS`}
                       sx={{
-                        bgcolor: 'rgba(56, 189, 248, 0.1)',
-                        color: '#38bdf8',
+                        bgcolor: 'rgba(0,122,255,0.08)',
+                        color: '#007AFF',
                         fontWeight: 800,
                         fontSize: '0.65rem',
-                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        border: '1px solid rgba(0,122,255,0.25)',
                         '& .MuiChip-icon': { color: 'inherit' }
                       }}
                     />
@@ -980,14 +974,14 @@ function EnterpriseDashboardContent() {
                       </Typography>
                     )}
                     <Box sx={{ position: 'relative', width: 350 }}>
-                      <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#64748b', width: 16, height: 16 }} />
+                      <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#8E8E93', width: 16, height: 16 }} />
                       <input
                         placeholder="Search cases..."
                         value={drilldownSearch}
                         onChange={(e) => { setDrilldownSearch(e.target.value); setDrilldownPage(1); }}
                         style={{
                           width: '100%',
-                          backgroundColor: themeMode === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(0, 0, 0, 0.02)',
+                          backgroundColor: themeMode === 'dark' ? 'rgba(28,28,30,0.6)' : 'rgba(0, 0, 0, 0.02)',
                           border: (themeMode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : `1px solid ${theme.palette.divider}`),
                           borderRadius: '10px', padding: '10px 12px 10px 38px', color: theme.palette.text.primary, fontSize: '0.85rem', outline: 'none'
                         }}
@@ -1036,13 +1030,13 @@ function EnterpriseDashboardContent() {
               '&::-webkit-scrollbar': { width: '8px' },
               '&::-webkit-scrollbar-track': { background: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.03)' },
               '&::-webkit-scrollbar-thumb': {
-                background: (theme) => theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.3)',
+                background: (theme) => theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.3)' : 'rgba(120,120,128,0.3)',
                 borderRadius: '10px',
                 border: (theme) => theme.palette.mode === 'dark' ? 'none' : '2px solid transparent',
                 backgroundClip: 'padding-box'
               },
               '&::-webkit-scrollbar-thumb:hover': {
-                background: (theme) => theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.4)' : 'rgba(37, 99, 235, 0.5)',
+                background: (theme) => theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.5)' : 'rgba(120,120,128,0.5)',
                 backgroundClip: 'padding-box'
               }
             }} ref={contentScrollRef}>
@@ -1085,7 +1079,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Best Faithfulness"
                             value={`${((winner?.avg_faithfulness || 0) * 100).toFixed(0)}%`}
-                            color="#e879f9"
+                            color="#BF5AF2"
                             icon={<ShieldCheck size={24} />}
                             subtitle="Grounded logic (Top Model)"
                             trend={trends.faithfulness}
@@ -1095,7 +1089,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Best Relevancy"
                             value={`${((winner?.avg_relevancy || 0) * 100).toFixed(0)}%`}
-                            color="#f59e0b"
+                            color="#FF9500"
                             icon={<AlignLeft size={24} />}
                             subtitle="Intent accuracy (Top Model)"
                             trend={trends.relevancy}
@@ -1107,7 +1101,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Max Context Prec."
                             value={`${((winner?.avg_context_precision || 0) * 100).toFixed(0)}%`}
-                            color="#06b6d4"
+                            color="#5AC8FA"
                             icon={<Cpu size={24} />}
                             subtitle="Retrieval Signal-to-Noise"
                             trend={trends.precision}
@@ -1117,7 +1111,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Max Context Recall"
                             value={`${((winner?.retrieval_success || 0) * 100).toFixed(0)}%`}
-                            color="#6366f1"
+                            color="#5856D6"
                             icon={<Layers size={24} />}
                             subtitle="Information Coverage"
                             trend={trends.recall}
@@ -1127,7 +1121,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Hallucination Rate"
                             value={`${((1 - (winner?.avg_faithfulness || 0)) * 100).toFixed(0)}%`}
-                            color="#ef4444"
+                            color="#FF3B30"
                             icon={<AlertTriangle size={24} />}
                             subtitle="Safety Risk Assessment"
                           />
@@ -1136,7 +1130,7 @@ function EnterpriseDashboardContent() {
                           <GlassCard
                             title="Total Questions"
                             value={data?.test_cases?.length || 0}
-                            color="#64748b"
+                            color="#8E8E93"
                             icon={<Target size={24} />}
                             subtitle="Total Evaluation Volume"
                           />
@@ -1144,7 +1138,7 @@ function EnterpriseDashboardContent() {
 
                         {/* Main Visualization */}
                         <Grid size={{ xs: 12, md: 8 }} className="no-print">
-                          <Paper sx={{ px: 3, py: 2.5, height: 440, borderRadius: 2, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.6)', border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(14, 165, 233, 0.35)' : '0 10px 30px rgba(0,0,0,0.05)' }}>
+                          <Paper sx={{ px: 3, py: 2.5, height: 440, borderRadius: 2, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(28,28,30,0.4)' : 'rgba(255, 255, 255, 0.6)', border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(0,0,0,0.08)' : '0 10px 30px rgba(0,0,0,0.05)' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                               <Box>
                                 <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', lineHeight: 1.2 }}>Performance Trajectory</Typography>
@@ -1156,8 +1150,8 @@ function EnterpriseDashboardContent() {
                                 <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                   <defs>
                                     <linearGradient id="colorPrimary" x1="0" y1="0" x2="0" y2="1">
-                                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
-                                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                                      <stop offset="5%" stopColor="#007AFF" stopOpacity={0.3} />
+                                      <stop offset="95%" stopColor="#007AFF" stopOpacity={0} />
                                     </linearGradient>
                                   </defs>
                                   <CartesianGrid strokeDasharray="4 4" vertical={true} stroke={theme.palette.divider} strokeWidth={1.5} />
@@ -1165,12 +1159,12 @@ function EnterpriseDashboardContent() {
                                   <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.palette.text.secondary, fontSize: 10, fontWeight: 700 }} />
                                   <ChartTooltip content={<CustomTooltip />} />
                                   <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 600, top: -10 }} />
-                                  <Area name="Master RQS Score" type="monotone" dataKey="RQS" stroke="#2563eb" strokeWidth={3} fillOpacity={1} fill="url(#colorPrimary)" />
-                                  <Area name="Answer Correctness" type="monotone" dataKey="AnswerCorrectness" stroke="#22c55e" strokeWidth={2} fillOpacity={0} />
-                                  <Area name="Answer Faithfulness" type="monotone" dataKey="Faithfulness" stroke="#e879f9" strokeWidth={2} fillOpacity={0} />
-                                  <Area name="Answer Relevancy" type="monotone" dataKey="Relevancy" stroke="#f59e0b" strokeWidth={2} fillOpacity={0} />
-                                  <Area name="Context Precision" type="monotone" dataKey="Precision" stroke="#06b6d4" strokeWidth={2} fillOpacity={0} />
-                                  <Area name="Context Recall" type="monotone" dataKey="Recall" stroke="#6366f1" strokeWidth={2} fillOpacity={0} />
+                                  <Area name="Master RQS Score" type="monotone" dataKey="RQS" stroke="#007AFF" strokeWidth={3} fillOpacity={1} fill="url(#colorPrimary)" />
+                                  <Area name="Answer Correctness" type="monotone" dataKey="AnswerCorrectness" stroke="#34C759" strokeWidth={2} fillOpacity={0} />
+                                  <Area name="Answer Faithfulness" type="monotone" dataKey="Faithfulness" stroke="#BF5AF2" strokeWidth={2} fillOpacity={0} />
+                                  <Area name="Answer Relevancy" type="monotone" dataKey="Relevancy" stroke="#FF9500" strokeWidth={2} fillOpacity={0} />
+                                  <Area name="Context Precision" type="monotone" dataKey="Precision" stroke="#5AC8FA" strokeWidth={2} fillOpacity={0} />
+                                  <Area name="Context Recall" type="monotone" dataKey="Recall" stroke="#5856D6" strokeWidth={2} fillOpacity={0} />
                                 </AreaChart>
                               </ResponsiveContainer>
                             </Box>
@@ -1187,10 +1181,10 @@ function EnterpriseDashboardContent() {
                               height: 440,
                               borderRadius: 2,
                               background: (theme) => theme.palette.mode === 'dark'
-                                ? 'linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(2, 6, 23, 0.8) 100%)'
-                                : 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.95) 100%)',
+                                ? 'linear-gradient(180deg, rgba(28,28,30,0.6) 0%, rgba(0,0,0,0.8) 100%)'
+                                : 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(242,242,247,0.95) 100%)',
                               border: (theme) => `1px solid ${theme.palette.divider}`,
-                              boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(255, 255, 255, 0.15)' : '0 10px 30px rgba(0,0,0,0.05)',
+                              boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(255,255,255,0.06)' : '0 10px 30px rgba(0,0,0,0.05)',
                               display: 'flex',
                               flexDirection: 'column',
                               position: 'relative',
@@ -1224,8 +1218,8 @@ function EnterpriseDashboardContent() {
                                       key={model.id}
                                       name={model.id}
                                       dataKey={model.id}
-                                      stroke={['#2563eb', '#fbbf24', '#f472b6'][idx]}
-                                      fill={['#2563eb', '#fbbf24', '#f472b6'][idx]}
+                                      stroke={['#007AFF', '#FF9500', '#FF2D55'][idx]}
+                                      fill={['#007AFF', '#FF9500', '#FF2D55'][idx]}
                                       fillOpacity={0.25}
                                       strokeWidth={3}
                                     />
@@ -1241,8 +1235,8 @@ function EnterpriseDashboardContent() {
                                     width: 8,
                                     height: 8,
                                     borderRadius: '50%',
-                                    bgcolor: ['#2563eb', '#fbbf24', '#f472b6'][idx],
-                                    boxShadow: `0 0 10px ${['#2563eb', '#fbbf24', '#f472b6'][idx]}`
+                                    bgcolor: ['#007AFF', '#FF9500', '#FF2D55'][idx],
+                                    boxShadow: `0 0 10px ${['#007AFF', '#FF9500', '#FF2D55'][idx]}`
                                   }} />
                                   <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: '0.75rem' }}>{model.id}</Typography>
                                 </Box>
@@ -1254,7 +1248,7 @@ function EnterpriseDashboardContent() {
 
                         {/* Leaderboard Table */}
                         <Grid size={{ xs: 12 }}>
-                          <TableContainer component={Paper} sx={{ borderRadius: 2, bgcolor: 'background.paper', border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(14, 165, 233, 0.35)' : '0 10px 30px rgba(0,0,0,0.05)' }}>
+                          <TableContainer component={Paper} sx={{ borderRadius: 2, bgcolor: 'background.paper', border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 30px rgba(0,0,0,0.08)' : '0 10px 30px rgba(0,0,0,0.05)' }}>
                             <Box sx={{ px: 3, py: 2.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <Typography sx={{ fontWeight: 800, fontSize: '0.85rem', lineHeight: 1.2 }}>Leaderboard</Typography>
                               <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center' }}>
@@ -1269,16 +1263,14 @@ function EnterpriseDashboardContent() {
                                     borderRadius: 99,
                                     fontSize: '0.75rem',
                                     fontWeight: 800,
-                                    background: '#2563eb',
+                                    background: '#007AFF',
                                     color: '#fff',
                                     textTransform: 'none',
                                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                                    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+                                    boxShadow: 'none',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                     '&:hover': {
-                                      background: '#1d4ed8',
-                                      transform: 'translateY(-2px)',
-                                      boxShadow: '0 6px 20px rgba(37, 99, 235, 0.4)',
+                                      background: '#0056B3',
                                       color: '#fff',
                                     }
                                   }}
@@ -1296,16 +1288,14 @@ function EnterpriseDashboardContent() {
                                     borderRadius: 99,
                                     fontSize: '0.75rem',
                                     fontWeight: 800,
-                                    background: '#2563eb',
+                                    background: '#007AFF',
                                     color: '#fff',
                                     textTransform: 'none',
                                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                                    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+                                    boxShadow: 'none',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                     '&:hover': {
-                                      background: '#1d4ed8',
-                                      transform: 'translateY(-2px)',
-                                      boxShadow: '0 6px 20px rgba(37, 99, 235, 0.4)',
+                                      background: '#0056B3',
                                       color: '#fff',
                                     }
                                   }}
@@ -1356,8 +1346,8 @@ function EnterpriseDashboardContent() {
                                         width: 28,
                                         height: 28,
                                         borderRadius: '50%',
-                                        bgcolor: row.rank === 1 ? 'rgba(245, 158, 11, 0.1)' : (themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
-                                        color: row.rank === 1 ? '#f59e0b' : 'inherit',
+                                        bgcolor: row.rank === 1 ? 'rgba(255,149,0,0.1)' : (themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                                        color: row.rank === 1 ? '#FF9500' : 'inherit',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -1369,7 +1359,7 @@ function EnterpriseDashboardContent() {
                                     </TableCell>
                                     <TableCell sx={{ fontWeight: 700, borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
                                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-                                        {isWinnerRow && <Trophy size={14} color="#f59e0b" />}
+                                        {isWinnerRow && <Trophy size={14} color="#FF9500" />}
                                         <span>{row.id}</span>
                                       </Box>
                                     </TableCell>
@@ -1487,13 +1477,13 @@ function EnterpriseDashboardContent() {
             sx={{
               width: '100%',
               borderRadius: 3,
-              bgcolor: 'rgba(15, 23, 42, 0.95)',
-              color: '#38bdf8',
+              bgcolor: 'rgba(0,0,0,0.95)',
+              color: '#007AFF',
               fontWeight: 800,
-              boxShadow: '0 0 40px rgba(56, 189, 248, 0.4)',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
+              boxShadow: '0 0 40px rgba(0,122,255,0.3)',
+              border: '1px solid rgba(0,122,255,0.25)',
               backdropFilter: 'blur(10px)',
-              '.MuiAlert-icon': { color: '#38bdf8' }
+              '.MuiAlert-icon': { color: '#007AFF' }
             }}
           >
             {snackbarMsg}

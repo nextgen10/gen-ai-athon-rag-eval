@@ -26,7 +26,7 @@ export function AboutView() {
           sx={{
             p: 4,
             borderRadius: 4,
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.8)'),
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(28,28,30,0.7)' : 'rgba(255,255,255,0.9)'),
             border: (theme) => `1px solid ${theme.palette.divider}`,
             backdropFilter: 'blur(20px)',
             boxShadow: (theme) => (theme.palette.mode === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.2)' : '0 10px 30px rgba(0,0,0,0.05)'),
@@ -42,8 +42,8 @@ export function AboutView() {
                 height: 120,
                 mx: 'auto',
                 mb: 2,
-                border: '2px solid #2563eb',
-                boxShadow: '0 0 20px rgba(37, 99, 235, 0.3)',
+                border: '2px solid #007AFF',
+                boxShadow: 'none',
               }}
             />
             <Typography variant="h5" sx={{ fontWeight: 900, mb: 0.5, color: 'text.primary' }}>
@@ -58,7 +58,7 @@ export function AboutView() {
 
           <Stack spacing={2.5}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: 'rgba(37, 99, 235, 0.1)', color: '#2563eb' }}>
+              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: 'rgba(0,122,255,0.1)', color: '#007AFF' }}>
                 <Mail size={18} />
               </Box>
               <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
@@ -80,8 +80,8 @@ export function AboutView() {
               background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'),
               transition: 'all 0.2s',
               '&:hover': {
-                borderColor: '#2563eb',
-                background: 'rgba(37, 99, 235, 0.1)',
+                borderColor: '#007AFF',
+                background: 'rgba(0,122,255,0.08)',
                 transform: 'translateY(-1px)',
               },
             }}
@@ -102,13 +102,13 @@ export function AboutView() {
           '&::-webkit-scrollbar': { width: '8px' },
           '&::-webkit-scrollbar-track': { background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.03)') },
           '&::-webkit-scrollbar-thumb': {
-            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.3)'),
+            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.3)' : 'rgba(120,120,128,0.3)'),
             borderRadius: '10px',
             border: (theme) => (theme.palette.mode === 'dark' ? 'none' : '2px solid transparent'),
             backgroundClip: 'padding-box',
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(37, 99, 235, 0.4)' : 'rgba(37, 99, 235, 0.5)'),
+            background: (theme) => (theme.palette.mode === 'dark' ? 'rgba(120,120,128,0.5)' : 'rgba(120,120,128,0.5)'),
             backgroundClip: 'padding-box',
           },
         }}
@@ -119,7 +119,7 @@ export function AboutView() {
             description="A single production score used to rank bots in Multi RAG EVAL."
             details="Formula used in this app: RQS = (alpha * AnswerCorrectness) + (beta * Faithfulness) + (gamma * AnswerRelevancy) + (delta * ((ContextPrecision + ContextRecall) / 2)), where delta = max(0, 1 - alpha - beta - gamma)."
             example="If alpha+beta+gamma = 0.80, then delta = 0.20 and that 0.20 is applied to average retrieval health ((precision + recall)/2)."
-            color="#2563eb"
+            color="#007AFF"
             icon={<Target size={24} />}
           />
 
@@ -128,7 +128,7 @@ export function AboutView() {
             description="RAGAS metric that measures whether answer claims are supported by retrieved context."
             details="RAGAS formula (faithfulness): F = N_supported_claims / N_total_claims. High F means the answer stays grounded in retrieved evidence."
             example="If 4 claims are made and 3 are supported by context, faithfulness = 3/4 = 0.75."
-            color="#10b981"
+            color="#34C759"
             icon={<ShieldCheck size={24} />}
           />
 
@@ -137,7 +137,7 @@ export function AboutView() {
             description="LLM-judge metric in this app that scores how directly the answer addresses the question."
             details="Implemented as deterministic LLM scoring (temperature=0) with normalized output in [0,1]. This replaces embedding-based relevancy in the current pipeline."
             example="Question asks for a direct policy value, but the answer is mostly unrelated narrative -> low answer relevancy."
-            color="#3b82f6"
+            color="#007AFF"
             icon={<Target size={24} />}
           />
 
@@ -146,7 +146,7 @@ export function AboutView() {
             description="RAGAS retrieval diagnostics: precision = signal quality, recall = evidence coverage."
             details="RAGAS context recall: CR = |RelevantClaims_retrieved| / |RelevantClaims_reference|. RAGAS context precision@K: CP = (1/R) * sum_{k=1..K}(Precision@k * rel_k), where rel_k in {0,1} and R = sum rel_k."
             example="High recall + low precision means you retrieved needed evidence but mixed it with noise. Low recall means required evidence was missing."
-            color="#f59e0b"
+            color="#FF9500"
             icon={<Compass size={24} />}
           />
 
@@ -155,7 +155,7 @@ export function AboutView() {
             description="LLM-judge metric in this app for factual and semantic alignment with ground truth."
             details="Implemented as deterministic LLM scoring (temperature=0) with normalized output in [0,1]. This score is used directly in RQS as AnswerCorrectness."
             example="Ground truth says '$40M' and answer says '$40 million in Q3' -> high correctness even with paraphrasing."
-            color="#8b5cf6"
+            color="#AF52DE"
             icon={<Layers size={24} />}
           />
 
@@ -164,18 +164,18 @@ export function AboutView() {
             description="A per-bot diagnostic that cross-tabulates retrieval quality against generation quality across all test cases."
             details="Axes: Retrieval = context_recall ≥ threshold (good/poor). Generation = answer_correctness ≥ threshold (correct/wrong). Only cases with ground_truth are placed in the matrix; cases without are counted separately as skipped. Precision, Recall, F1, and Accuracy are derived from the four quadrant counts."
             example="10 cases: TP=6, FN=2, FP=1, TN=1 → Precision=6/(6+1)=0.86, Recall=6/(6+2)=0.75, F1=0.80. The 2 FN cases tell you retrieval is working but generation is the bottleneck."
-            color="#6366f1"
+            color="#5856D6"
             icon={<Grid size={24} />}
           />
 
           <Box sx={{ mt: 1, mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ width: 8, height: 24, bgcolor: '#6366f1', borderRadius: 1 }} />
+              <Box sx={{ width: 8, height: 24, bgcolor: '#5856D6', borderRadius: 1 }} />
               Confusion Matrix — Quadrant Reference
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 600 }}>
               Each test case is placed in one of four quadrants based on whether retrieval and generation both meet their configured thresholds.
-              The <span style={{ fontWeight: 800, color: '#6366f1' }}>restaurant analogy</span> — waiter = retrieval, chef = LLM generation — maps directly onto each outcome.
+              The <span style={{ fontWeight: 800, color: '#5856D6' }}>restaurant analogy</span> — waiter = retrieval, chef = LLM generation — maps directly onto each outcome.
             </Typography>
 
             <TableContainer
@@ -188,7 +188,7 @@ export function AboutView() {
               }}
             >
               <Table size="small">
-                <TableHead sx={{ bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc') }}>
+                <TableHead sx={{ bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(242,242,247,1)') }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 800, color: 'text.primary', py: 2, width: '10%' }}>QUADRANT</TableCell>
                     <TableCell sx={{ fontWeight: 800, color: 'text.primary', width: '15%' }}>RETRIEVAL</TableCell>
@@ -252,7 +252,7 @@ export function AboutView() {
           {/* ── Derived metrics from confusion matrix ── */}
           <Box sx={{ mt: 1, mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ width: 8, height: 24, bgcolor: '#6366f1', borderRadius: 1 }} />
+              <Box sx={{ width: 8, height: 24, bgcolor: '#5856D6', borderRadius: 1 }} />
               Metrics Derived from Confusion Matrix
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 600 }}>
@@ -265,7 +265,7 @@ export function AboutView() {
                   number: '1',
                   title: 'Accuracy',
                   subtitle: 'Overall correctness of the model.',
-                  color: '#10b981',
+                  color: '#34C759',
                   numerator: 'TP + TN',
                   denominator: 'TP + TN + FP + FN',
                   note: 'Good baseline measure, but can be misleading on imbalanced datasets.',
@@ -274,7 +274,7 @@ export function AboutView() {
                   number: '2',
                   title: 'Precision',
                   subtitle: 'How many predicted positives were actually correct.',
-                  color: '#6366f1',
+                  color: '#5856D6',
                   numerator: 'TP',
                   denominator: 'TP + FP',
                   note: 'Use when false positives are costly — e.g. confidently wrong answers erode user trust.',
@@ -283,7 +283,7 @@ export function AboutView() {
                   number: '3',
                   title: 'Recall  (Sensitivity)',
                   subtitle: 'How many actual positives were detected.',
-                  color: '#06b6d4',
+                  color: '#5AC8FA',
                   numerator: 'TP',
                   denominator: 'TP + FN',
                   note: 'Use when missing positives is dangerous — e.g. failing to surface a critical answer.',
@@ -292,7 +292,7 @@ export function AboutView() {
                   number: '4',
                   title: 'F1 Score',
                   subtitle: 'Harmonic mean — balances precision and recall.',
-                  color: '#8b5cf6',
+                  color: '#AF52DE',
                   numeratorNode: (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem' }}>
@@ -431,7 +431,7 @@ export function AboutView() {
               }}
             >
               <Table size="small">
-                <TableHead sx={{ bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc') }}>
+                <TableHead sx={{ bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(242,242,247,1)') }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 800, color: 'text.primary', py: 2 }}>METRIC</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 800, color: 'text.primary' }}>

@@ -21,13 +21,13 @@ export const PaginationControl: React.FC<PaginationControlProps> = ({ count, pag
                         slots={{ previous: () => <ArrowLeft size={16} />, next: () => <ArrowRight size={16} /> }}
                         {...item}
                         sx={{
-                            color: '#94a3b8',
+                            color: '#8E8E93',
                             '&.Mui-selected': {
-                                bgcolor: 'rgba(56, 189, 248, 0.1)',
-                                color: '#38bdf8',
-                                border: '1px solid rgba(56, 189, 248, 0.3)',
+                                bgcolor: 'rgba(0,122,255,0.1)',
+                                color: '#007AFF',
+                                border: '1px solid rgba(0,122,255,0.25)',
                                 '&:hover': {
-                                    bgcolor: 'rgba(56, 189, 248, 0.2)',
+                                    bgcolor: 'rgba(0,122,255,0.15)',
                                 }
                             }
                         }}

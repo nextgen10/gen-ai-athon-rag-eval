@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|BUG\\\\|HACK\" /Users/aniketmarwadi/Downloads/nexus-eval-main/backend/*.py)",
+      "Bash(sqlite3 /Users/aniketmarwadi/Downloads/nexus-eval-main/backend/evaluations.db \".tables\")",
+      "Bash(python3 -c \"import ragas; print\\(ragas.__file__\\)\")",
+      "Read(//Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ragas/**)",
+      "Bash(pip install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -m venv .venv)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(python3 -c \"from evaluator import RagEvaluator; print\\(''Import OK''\\)\")",
+      "Bash(python3 -c \"from evaluator import RagEvaluator; print\\(''''Import OK''''\\)\")"
+    ]
+  }
+}
