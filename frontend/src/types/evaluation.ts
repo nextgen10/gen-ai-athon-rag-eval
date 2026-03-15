@@ -58,6 +58,19 @@ export interface LeaderboardRow {
   [key: string]: unknown;
 }
 
+export interface ConfusionMatrixEntry {
+  matrix: { TP: number; FP: number; FN: number; TN: number };
+  precision: number;
+  recall: number;
+  f1: number;
+  accuracy: number;
+  pass_rates: Record<string, number>;
+  total_cases: number;
+  measured_cases: number;
+  skipped_no_gt: number;
+  thresholds: { context_recall: number; answer_correctness: number };
+}
+
 export interface EvaluationData {
   id: string;
   name?: string;
@@ -67,6 +80,7 @@ export interface EvaluationData {
   bot_metrics: Record<string, Record<string, BotMetric>>;
   summaries: Record<string, EvaluationSummaryEntry>;
   leaderboard: LeaderboardRow[];
+  confusion_matrix?: Record<string, ConfusionMatrixEntry>;
 }
 
 export interface EvaluationHistoryEntry {

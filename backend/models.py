@@ -70,6 +70,7 @@ class EvaluationResult(BaseModel):
     leaderboard: List[Dict[str, Any]]
     winner: Optional[str] = None
     config: Dict[str, Any] = Field(default_factory=dict)
+    confusion_matrix: Dict[str, Any] = Field(default_factory=dict)
 
 
 class EvaluationSummary(BaseModel):

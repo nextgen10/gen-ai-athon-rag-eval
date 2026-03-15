@@ -27,6 +27,7 @@ class EvaluationRecord(Base):
     leaderboard = Column(JSON)
     winner = Column(String)
     config = Column(JSON)
+    confusion_matrix = Column(JSON)
 
 
 class MetricCache(Base):
@@ -46,6 +47,9 @@ def ensure_schema_columns():
         columns = [row[1] for row in conn.execute(text("PRAGMA table_info(evaluations)")).fetchall()]
         if "config" not in columns:
             conn.execute(text("ALTER TABLE evaluations ADD COLUMN config JSON"))
+            conn.commit()
+        if "confusion_matrix" not in columns:
+            conn.execute(text("ALTER TABLE evaluations ADD COLUMN confusion_matrix JSON"))
             conn.commit()
 
 

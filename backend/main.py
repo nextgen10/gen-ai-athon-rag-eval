@@ -171,7 +171,8 @@ def save_to_db(result: EvaluationResult):
             summaries=res_data["summaries"],
             leaderboard=res_data["leaderboard"],
             winner=res_data["winner"],
-            config=res_data.get("config", {})
+            config=res_data.get("config", {}),
+            confusion_matrix=res_data.get("confusion_matrix", {})
         )
         db.add(record)
         db.commit()
@@ -200,7 +201,8 @@ async def get_latest_evaluation():
             summaries=record.summaries,
             leaderboard=record.leaderboard,
             winner=record.winner,
-            config=record.config or {}
+            config=record.config or {},
+            confusion_matrix=record.confusion_matrix or {}
         )
     finally:
         db.close()
@@ -358,7 +360,19 @@ async def evaluate_excel(
         logger.info("Starting evaluation for %d model(s), %d test case(s)", len(bot_columns), len(test_cases))
         results = await evaluator.run_multi_bot_evaluation(test_cases)
         logger.info("Evaluation completed successfully")
-        
+
+        confusion = evaluator.compute_confusion_matrix(
+            results["bot_metrics"],
+            {
+                "context_recall":     context_recall_threshold,
+                "answer_correctness": answer_correctness_threshold,
+                "faithfulness":       faithfulness_threshold,
+                "answer_relevancy":   answer_relevancy_threshold,
+                "context_precision":  context_precision_threshold,
+                "rqs":                rqs_threshold,
+            },
+        )
+
         eval_id = str(uuid.uuid4())
         result = EvaluationResult(
             id=eval_id,
@@ -369,6 +383,7 @@ async def evaluate_excel(
             summaries=results["summaries"],
             leaderboard=results["leaderboard"],
             winner=results["winner"],
+            confusion_matrix=confusion,
             config={
                 "model": model,
                 "alpha": alpha,
@@ -451,6 +466,18 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         logger.exception("Evaluation pipeline failed")
         raise HTTPException(status_code=500, detail=str(exc))
 
+    confusion = evaluator.compute_confusion_matrix(
+        results["bot_metrics"],
+        {
+            "context_recall":     request.context_recall_threshold,
+            "answer_correctness": request.answer_correctness_threshold,
+            "faithfulness":       request.faithfulness_threshold,
+            "answer_relevancy":   request.answer_relevancy_threshold,
+            "context_precision":  request.context_precision_threshold,
+            "rqs":                request.rqs_threshold,
+        },
+    )
+
     eval_id = str(uuid.uuid4())
     result = EvaluationResult(
         id=eval_id,
@@ -461,6 +488,7 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         summaries=results["summaries"],
         leaderboard=results["leaderboard"],
         winner=results["winner"],
+        confusion_matrix=confusion,
         config={
             "model": request.model,
             "alpha": request.alpha,
@@ -618,6 +646,7 @@ async def get_evaluation(eval_id: str):
             leaderboard=sanitize_floats(record.leaderboard or []),
             winner=record.winner,
             config=record.config or {},
+            confusion_matrix=sanitize_floats(record.confusion_matrix or {}),
         )
     finally:
         db.close()

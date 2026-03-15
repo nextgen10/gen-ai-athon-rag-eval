@@ -137,6 +137,99 @@ class RagEvaluator:
         rqs = sum(normalized_weights[k] * values[k] for k in active_keys)
         return round(self._clamp01(rqs), 4)
 
+    def compute_confusion_matrix(
+        self,
+        bot_metrics: Dict[str, Dict[str, "RAGMetrics"]],
+        thresholds: Dict[str, float],
+    ) -> Dict[str, Any]:
+        """
+        Builds a per-bot retrieval × generation confusion matrix.
+
+        Axes:
+          - Retrieval quality : context_recall  >= threshold  → positive
+          - Generation quality: answer_correctness >= threshold → positive
+
+        Quadrants:
+          TP — good retrieval  + correct answer   (pipeline working end-to-end)
+          FN — good retrieval  + wrong answer     (generation model issue)
+          FP — poor retrieval  + correct answer   (bot using prior knowledge / lucky)
+          TN — poor retrieval  + wrong answer     (retrieval layer failing)
+
+        Cases where answer_correctness == 0.0 AND context_recall == 0.0 are
+        skipped (no ground_truth, metric not measured).
+
+        Also computes per-metric pass rates for a heatmap view.
+        """
+        recall_t    = float(thresholds.get("context_recall",    0.75))
+        correct_t   = float(thresholds.get("answer_correctness", 0.80))
+        faith_t     = float(thresholds.get("faithfulness",       0.80))
+        relevancy_t = float(thresholds.get("answer_relevancy",   0.80))
+        precision_t = float(thresholds.get("context_precision",  0.75))
+        rqs_t       = float(thresholds.get("rqs",                0.75))
+
+        result: Dict[str, Any] = {}
+        for bid, case_metrics in bot_metrics.items():
+            tp = fp = fn = tn = skipped = 0
+            metric_pass: Dict[str, int] = {
+                "faithfulness": 0, "answer_relevancy": 0,
+                "answer_correctness": 0, "context_recall": 0,
+                "context_precision": 0, "rqs": 0,
+            }
+            total_cases = len(case_metrics)
+
+            for m in case_metrics.values():
+                # Skip cases where key RAG metrics were never measured
+                if m.answer_correctness == 0.0 and m.context_recall == 0.0:
+                    skipped += 1
+                else:
+                    good_retrieval  = m.context_recall    >= recall_t
+                    good_generation = m.answer_correctness >= correct_t
+                    if good_retrieval and good_generation:
+                        tp += 1
+                    elif good_retrieval and not good_generation:
+                        fn += 1
+                    elif not good_retrieval and good_generation:
+                        fp += 1
+                    else:
+                        tn += 1
+
+                # Per-metric pass counts (all cases, not just GT ones)
+                if m.faithfulness      >= faith_t:     metric_pass["faithfulness"]      += 1
+                if m.answer_relevancy  >= relevancy_t: metric_pass["answer_relevancy"]  += 1
+                if m.answer_correctness >= correct_t:  metric_pass["answer_correctness"] += 1
+                if m.context_recall    >= recall_t:    metric_pass["context_recall"]    += 1
+                if m.context_precision >= precision_t: metric_pass["context_precision"] += 1
+                if m.rqs               >= rqs_t:       metric_pass["rqs"]               += 1
+
+            measured = tp + fp + fn + tn
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+            recall    = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+            f1        = (2 * precision * recall / (precision + recall)
+                         if (precision + recall) > 0 else 0.0)
+            accuracy  = (tp + tn) / measured if measured > 0 else 0.0
+
+            pass_rates = {
+                k: round(v / total_cases, 4) if total_cases > 0 else 0.0
+                for k, v in metric_pass.items()
+            }
+
+            result[bid] = {
+                "matrix":       {"TP": tp, "FP": fp, "FN": fn, "TN": tn},
+                "precision":    round(precision, 4),
+                "recall":       round(recall,    4),
+                "f1":           round(f1,        4),
+                "accuracy":     round(accuracy,  4),
+                "pass_rates":   pass_rates,
+                "total_cases":  total_cases,
+                "measured_cases": measured,
+                "skipped_no_gt": skipped,
+                "thresholds":   {
+                    "context_recall":     recall_t,
+                    "answer_correctness": correct_t,
+                },
+            }
+        return result
+
     def _safe_float(self, value) -> float:
         """Sanitizes float values to be JSON compliant (no NaN/Inf)"""
         try:

@@ -87,6 +87,7 @@ import { HistoryView } from '../components/Views/HistoryView';
 import { ExperimentsView } from '../components/Views/ExperimentsView';
 import { ConfigurationView } from '../components/Views/ConfigurationView';
 import { AboutView } from '../components/Views/AboutView';
+import { ConfusionMatrixView } from '../components/Views/ConfusionMatrixView';
 import { CompareEvaluationsDialog } from '../components/Dialogs/CompareEvaluationsDialog';
 import { EvaluationProgressBackdrop } from '../components/Dialogs/EvaluationProgressBackdrop';
 import { ReportLoadingBackdrop } from '../components/Dialogs/ReportLoadingBackdrop';
@@ -164,7 +165,7 @@ function EnterpriseDashboardContent() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const viewFromUrl = params.get('view');
-      if (viewFromUrl && ['insights', 'drilldown', 'history', 'about', 'config'].includes(viewFromUrl)) {
+      if (viewFromUrl && ['insights', 'drilldown', 'history', 'about', 'config', 'confusion'].includes(viewFromUrl)) {
         return viewFromUrl;
       }
     }
@@ -712,6 +713,7 @@ function EnterpriseDashboardContent() {
               {[
                 { id: 'insights', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
                 { id: 'drilldown', label: 'Experiments', icon: <Activity size={16} /> },
+                { id: 'confusion', label: 'Confusion Matrix', icon: <Grid size={16} /> },
                 { id: 'history', label: 'History', icon: <History size={16} /> },
                 { id: 'config', label: 'Configuration', icon: <Settings size={16} /> },
                 { id: 'about', label: 'About', icon: <Info size={16} /> },
@@ -877,13 +879,15 @@ function EnterpriseDashboardContent() {
                   {activeView === 'insights' ? 'Production Intelligence' :
                     activeView === 'history' ? 'Historical Evaluations' :
                       activeView === 'drilldown' ? 'Experiments' :
-                        activeView === 'about' ? 'Methodology & Framework' : 'Configuration'}
+                        activeView === 'confusion' ? 'Confusion Matrix' :
+                          activeView === 'about' ? 'Methodology & Framework' : 'Configuration'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' } }}>
                   {activeView === 'insights' ? `Multimodal evaluation across ${leaderboardData.length} active agent architectures.` :
                     activeView === 'history' ? 'Archive of past evaluation runs and performance benchmarks.' :
                       activeView === 'drilldown' ? 'Deep dive into specific model metrics and granular analysis.' :
-                        activeView === 'about' ? 'Detailed breakdown of organizational RAG scoring benchmarks.' : 'System settings and preferences.'}
+                        activeView === 'confusion' ? 'Retrieval × generation quality breakdown per bot.' :
+                          activeView === 'about' ? 'Detailed breakdown of organizational RAG scoring benchmarks.' : 'System settings and preferences.'}
                 </Typography>
               </Box>
 
@@ -1033,7 +1037,7 @@ function EnterpriseDashboardContent() {
             {/* Scrollable Content Area (Freeze Pan) */}
             <Box sx={{
               flexGrow: 1,
-              overflowY: (activeView === 'about' || activeView === 'history' || activeView === 'config') ? 'hidden' : 'auto',
+              overflowY: (activeView === 'about' || activeView === 'history' || activeView === 'config' || activeView === 'confusion') ? 'hidden' : 'auto',
               overflowX: 'hidden',
               width: '100%',
               maxWidth: '100vw',
@@ -1062,9 +1066,9 @@ function EnterpriseDashboardContent() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  style={{ height: ['about', 'history', 'config'].includes(activeView) ? '100%' : 'auto' }}
+                  style={{ height: ['about', 'history', 'config', 'confusion'].includes(activeView) ? '100%' : 'auto' }}
                 >
-                  <Box sx={{ height: ['about', 'history', 'config'].includes(activeView) ? '100%' : 'auto' }}>
+                  <Box sx={{ height: ['about', 'history', 'config', 'confusion'].includes(activeView) ? '100%' : 'auto' }}>
                     {/* Dashboard View */}
                     {activeView === 'insights' && data && (
                       <Grid container spacing={2} columns={12}>
@@ -1430,6 +1434,10 @@ function EnterpriseDashboardContent() {
                         requestRecommendationForRow={requestRecommendationForRow}
                         openRecommendationDetail={openRecommendationDetail}
                       />
+                    )}
+
+                    {activeView === 'confusion' && data && (
+                      <ConfusionMatrixView data={data} themeMode={themeMode} />
                     )}
 
                     {activeView === 'about' && <AboutView />}

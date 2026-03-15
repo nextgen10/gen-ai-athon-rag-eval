@@ -14,7 +14,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { AlertTriangle, CheckCircle2, Compass, Layers, Mail, ShieldCheck, Target } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Compass, Grid, Layers, Mail, ShieldCheck, Target } from 'lucide-react';
 import { MetricExplanationCard } from '../Common/MetricExplanationCard';
 import { CognizantIcon } from '../Common/CognizantIcon';
 
@@ -158,6 +158,249 @@ export function AboutView() {
             color="#8b5cf6"
             icon={<Layers size={24} />}
           />
+
+          <MetricExplanationCard
+            title="Confusion Matrix"
+            description="A per-bot diagnostic that cross-tabulates retrieval quality against generation quality across all test cases."
+            details="Axes: Retrieval = context_recall ≥ threshold (good/poor). Generation = answer_correctness ≥ threshold (correct/wrong). Only cases with ground_truth are placed in the matrix; cases without are counted separately as skipped. Precision, Recall, F1, and Accuracy are derived from the four quadrant counts."
+            example="10 cases: TP=6, FN=2, FP=1, TN=1 → Precision=6/(6+1)=0.86, Recall=6/(6+2)=0.75, F1=0.80. The 2 FN cases tell you retrieval is working but generation is the bottleneck."
+            color="#6366f1"
+            icon={<Grid size={24} />}
+          />
+
+          <Box sx={{ mt: 1, mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 8, height: 24, bgcolor: '#6366f1', borderRadius: 1 }} />
+              Confusion Matrix — Quadrant Reference
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 600 }}>
+              Each test case is placed in one of four quadrants based on whether retrieval and generation both meet their configured thresholds.
+              The <span style={{ fontWeight: 800, color: '#6366f1' }}>restaurant analogy</span> — waiter = retrieval, chef = LLM generation — maps directly onto each outcome.
+            </Typography>
+
+            <TableContainer
+              component={Paper}
+              sx={{
+                borderRadius: 3,
+                bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : '#ffffff'),
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                overflow: 'hidden',
+              }}
+            >
+              <Table size="small">
+                <TableHead sx={{ bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc') }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 800, color: 'text.primary', py: 2, width: '10%' }}>QUADRANT</TableCell>
+                    <TableCell sx={{ fontWeight: 800, color: 'text.primary', width: '15%' }}>RETRIEVAL</TableCell>
+                    <TableCell sx={{ fontWeight: 800, color: 'text.primary', width: '15%' }}>GENERATION</TableCell>
+                    <TableCell sx={{ fontWeight: 800, color: 'text.primary', width: '25%' }}>RESTAURANT ANALOGY</TableCell>
+                    <TableCell sx={{ fontWeight: 800, color: 'text.primary' }}>WHAT TO DO</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[
+                    {
+                      label: 'TP', color: '#047857', bg: (dark: boolean) => dark ? 'rgba(6,95,70,0.15)' : '#f0fdf4',
+                      retrieval: 'Good (≥ threshold)', generation: 'Correct (≥ threshold)',
+                      analogy: 'Great waiter, great chef — right ingredients, great dish',
+                      action: 'Pipeline working end-to-end. No action needed.',
+                    },
+                    {
+                      label: 'FN', color: '#b45309', bg: (dark: boolean) => dark ? 'rgba(120,53,15,0.15)' : '#fffbeb',
+                      retrieval: 'Good (≥ threshold)', generation: 'Wrong (< threshold)',
+                      analogy: 'Great waiter, bad chef — right ingredients, ruined dish',
+                      action: 'Retrieval is fine. Fix LLM prompt, system message, or generation parameters.',
+                    },
+                    {
+                      label: 'FP', color: '#c2410c', bg: (dark: boolean) => dark ? 'rgba(124,45,18,0.15)' : '#fff7ed',
+                      retrieval: 'Poor (< threshold)', generation: 'Correct (≥ threshold)',
+                      analogy: 'Bad waiter, somehow tasty — wrong ingredients, lucky dish',
+                      action: 'Bot used prior knowledge or got lucky. Treat as hallucination risk even if correct.',
+                    },
+                    {
+                      label: 'TN', color: '#dc2626', bg: (dark: boolean) => dark ? 'rgba(127,29,29,0.15)' : '#fef2f2',
+                      retrieval: 'Poor (< threshold)', generation: 'Wrong (< threshold)',
+                      analogy: 'Bad waiter, bad chef — wrong ingredients, bad dish',
+                      action: 'Fix the retrieval layer first — improve chunking, embedding model, or index.',
+                    },
+                  ].map((row) => (
+                    <TableRow key={row.label} sx={{ '&:last-child td': { border: 0 } }}>
+                      <TableCell sx={{ py: 2, bgcolor: (theme) => row.bg(theme.palette.mode === 'dark') }}>
+                        <Typography sx={{ fontWeight: 900, color: row.color, fontSize: '1rem', letterSpacing: '-0.02em' }}>
+                          {row.label}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>{row.retrieval}</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>{row.generation}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'text.secondary' }}>
+                          {row.analogy}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontSize: '0.78rem', color: 'text.primary' }}>
+                          {row.action}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          {/* ── Derived metrics from confusion matrix ── */}
+          <Box sx={{ mt: 1, mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 8, height: 24, bgcolor: '#6366f1', borderRadius: 1 }} />
+              Metrics Derived from Confusion Matrix
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 600 }}>
+              Using TP, TN, FP, FN we calculate four standard evaluation metrics. Each answers a different question about the bot's performance.
+            </Typography>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+              {[
+                {
+                  number: '1',
+                  title: 'Accuracy',
+                  subtitle: 'Overall correctness of the model.',
+                  color: '#10b981',
+                  numerator: 'TP + TN',
+                  denominator: 'TP + TN + FP + FN',
+                  note: 'Good baseline measure, but can be misleading on imbalanced datasets.',
+                },
+                {
+                  number: '2',
+                  title: 'Precision',
+                  subtitle: 'How many predicted positives were actually correct.',
+                  color: '#6366f1',
+                  numerator: 'TP',
+                  denominator: 'TP + FP',
+                  note: 'Use when false positives are costly — e.g. confidently wrong answers erode user trust.',
+                },
+                {
+                  number: '3',
+                  title: 'Recall  (Sensitivity)',
+                  subtitle: 'How many actual positives were detected.',
+                  color: '#06b6d4',
+                  numerator: 'TP',
+                  denominator: 'TP + FN',
+                  note: 'Use when missing positives is dangerous — e.g. failing to surface a critical answer.',
+                },
+                {
+                  number: '4',
+                  title: 'F1 Score',
+                  subtitle: 'Harmonic mean — balances precision and recall.',
+                  color: '#8b5cf6',
+                  numeratorNode: (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem' }}>
+                        Precision
+                      </Typography>
+                      <Typography sx={{ fontWeight: 900, fontSize: '1rem', mx: 0.25 }}>×</Typography>
+                      <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem' }}>
+                        Recall
+                      </Typography>
+                    </Box>
+                  ),
+                  denominatorNode: (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem' }}>
+                        Precision
+                      </Typography>
+                      <Typography sx={{ fontWeight: 900, fontSize: '1rem', mx: 0.25 }}>+</Typography>
+                      <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem' }}>
+                        Recall
+                      </Typography>
+                    </Box>
+                  ),
+                  prefixNode: (
+                    <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem', mr: 0.5 }}>
+                      2 ×
+                    </Typography>
+                  ),
+                  note: 'Single number to compare models when both precision and recall matter.',
+                },
+              ].map((m) => (
+                <Paper
+                  key={m.title}
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 3,
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+                    transition: 'all 0.25s ease',
+                    '&:hover': {
+                      borderColor: m.color,
+                      boxShadow: `0 8px 30px -8px ${m.color}44`,
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                >
+                  {/* Header */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                    <Box sx={{
+                      width: 28, height: 28, borderRadius: '50%', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center',
+                      bgcolor: `${m.color}20`, border: `1px solid ${m.color}55`,
+                    }}>
+                      <Typography sx={{ fontSize: '0.7rem', fontWeight: 900, color: m.color }}>{m.number}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', lineHeight: 1.2 }}>
+                        {m.title}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>{m.subtitle}</Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Formula block */}
+                  <Box sx={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)',
+                    borderLeft: `3px solid ${m.color}`,
+                    borderRadius: '0 8px 8px 0',
+                    py: 1.5, px: 2, mb: 1.5, gap: 0.5,
+                  }}>
+                    {'prefixNode' in m && m.prefixNode}
+                    {/* Fraction */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+                      {/* Numerator */}
+                      <Box sx={{ pb: 0.4 }}>
+                        {'numeratorNode' in m && m.numeratorNode ? m.numeratorNode : (
+                          <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem', color: m.color }}>
+                            {(m as any).numerator}
+                          </Typography>
+                        )}
+                      </Box>
+                      {/* Dividing line */}
+                      <Box sx={{ width: '100%', height: '2px', bgcolor: m.color, borderRadius: 1, opacity: 0.7 }} />
+                      {/* Denominator */}
+                      <Box sx={{ pt: 0.4 }}>
+                        {'denominatorNode' in m && m.denominatorNode ? m.denominatorNode : (
+                          <Typography sx={{ fontFamily: 'monospace', fontWeight: 900, fontSize: '0.95rem', color: 'text.secondary' }}>
+                            {(m as any).denominator}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  {/* Note */}
+                  <Box sx={{
+                    p: 1.25, borderRadius: 1.5,
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+                    border: (theme) => `1px dashed ${theme.palette.divider}`,
+                  }}>
+                    <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', lineHeight: 1.5, fontStyle: 'italic' }}>
+                      {m.note}
+                    </Typography>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          </Box>
 
           <MetricExplanationCard
             title="Hallucination Risk"
