@@ -99,12 +99,16 @@ function QuadrantCell({
       transition={{ duration: 0.38, delay, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -2, transition: { duration: 0.15 } }}
       sx={{
+        aspectRatio: '1 / 1',
+        height: '100%',
+        width: 'auto',
+        justifySelf: 'center',
         background: cfg.bg[mode],
         border: `1.5px solid ${cfg.border[mode]}`,
         borderRadius: 3,
         display: 'flex',
         flexDirection: 'column',
-        p: 2,
+        p: 1.5,
         position: 'relative',
         overflow: 'hidden',
         cursor: 'default',
@@ -249,7 +253,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
       <Box sx={{ flex: 1, minHeight: 0, display: 'flex', gap: 1.5 }}>
 
         {/* ── Left: Matrix ── */}
-        <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 0.75, justifyContent: 'center' }}>
 
           {/* Column axis header */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, flexShrink: 0 }}>
@@ -277,7 +281,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 1: Good retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, flex: 1, minHeight: 0 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gridTemplateRows: '1fr', gap: 1, flex: 1, minHeight: 0, maxHeight: '220px' }}>
             <Box sx={{
               display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1,
               bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
@@ -299,7 +303,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 2: Poor retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, flex: 1, minHeight: 0 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gridTemplateRows: '1fr', gap: 1, flex: 1, minHeight: 0, maxHeight: '220px' }}>
             <Box sx={{
               display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1,
               bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
