@@ -102,7 +102,7 @@ function QuadrantCell({
         aspectRatio: '1 / 1',
         height: '100%',
         width: 'auto',
-        justifySelf: 'center',
+        justifySelf: 'start',
         background: cfg.bg[mode],
         border: `1.5px solid ${cfg.border[mode]}`,
         borderRadius: 3,
@@ -307,7 +307,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
         <Box sx={{ minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 1, justifyContent: 'center' }}>
 
           {/* Column axis header */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1 }}>
             <Box />
             {([
               { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, ok: true },
@@ -332,7 +332,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 1: Good retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1, height: '190px' }}>
             <Box sx={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
@@ -354,7 +354,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 2: Poor retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px auto auto', gap: 1, height: '190px' }}>
             <Box sx={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
