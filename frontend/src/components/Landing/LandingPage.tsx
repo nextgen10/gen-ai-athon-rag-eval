@@ -253,7 +253,6 @@ export function LandingPage({ onEnter }: LandingPageProps) {
                 fontFamily: '"Helvetica Neue", Arial, system-ui, sans-serif',
                 textTransform: 'uppercase',
                 letterSpacing: '0.3em',
-                letterSpacing: '0.01em',
                 lineHeight: 1.1,
                 mb: 0.5,
                 color: dark ? 'rgba(235,235,245,0.55)' : 'rgba(60,60,67,0.55)',
