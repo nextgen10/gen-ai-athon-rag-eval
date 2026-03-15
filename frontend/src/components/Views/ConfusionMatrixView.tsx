@@ -307,47 +307,53 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
 
           {/* Column axis header */}
           {/* Column axis header */}
-          <Box sx={{ display: 'flex', gap: '2px' }}>
-            <Box sx={{ width: '88px', flexShrink: 0 }} />
+          <Box sx={{ display: 'flex', gap: '2px', alignItems: 'flex-end' }}>
+            <Box sx={{ width: '80px', flexShrink: 0 }} />
             {([
               { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, ok: true },
               { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, ok: false },
             ] as const).map(({ label, sub, ok }) => (
-              <Box key={label} sx={{
-                width: '182px', flexShrink: 0, textAlign: 'center', py: 0.75,
-                bgcolor: ok
-                  ? (dark ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.07)')
-                  : (dark ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)'),
-                border: `1px solid ${ok
-                  ? (dark ? 'rgba(52,211,153,0.25)' : 'rgba(5,150,105,0.2)')
-                  : (dark ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)')}`,
-                borderRadius: 2,
-              }}>
-                <Typography sx={{ fontSize: '0.68rem', fontWeight: 800, color: ok ? '#059669' : '#dc2626', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {label}
-                </Typography>
-                <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', mt: 0.15 }}>{sub}</Typography>
+              <Box key={label} sx={{ width: '182px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{
+                  width: '80px', height: '80px', flexShrink: 0,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  textAlign: 'center',
+                  bgcolor: ok
+                    ? (dark ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.07)')
+                    : (dark ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)'),
+                  border: `1px solid ${ok
+                    ? (dark ? 'rgba(52,211,153,0.25)' : 'rgba(5,150,105,0.2)')
+                    : (dark ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)')}`,
+                  borderRadius: 2,
+                }}>
+                  <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: ok ? '#059669' : '#dc2626', textTransform: 'uppercase', letterSpacing: 0.3, lineHeight: 1.2 }}>
+                    {label.split(' ').map((w, i) => <span key={i} style={{ display: 'block' }}>{w}</span>)}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.52rem', color: 'text.disabled', mt: 0.3 }}>{sub}</Typography>
+                </Box>
               </Box>
             ))}
           </Box>
 
           {/* Row 1: Good retrieval */}
-          <Box sx={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-            <Box sx={{
-              width: '88px', flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
-              border: `1px solid ${dark ? 'rgba(52,211,153,0.2)' : 'rgba(5,150,105,0.15)'}`,
-              borderRadius: 2, overflow: 'hidden',
-            }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, transform: 'rotate(-90deg)' }}>
-                <TrendingUp size={12} color="#059669" />
-                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
-                  Good retrieval
-                </Typography>
-                <Typography sx={{ fontSize: '0.55rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
-                  recall ≥ {fmt(e.thresholds.context_recall)}
-                </Typography>
+          <Box sx={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+            <Box sx={{ width: '80px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{
+                width: '80px', height: '80px', flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
+                border: `1px solid ${dark ? 'rgba(52,211,153,0.2)' : 'rgba(5,150,105,0.15)'}`,
+                borderRadius: 2, overflow: 'hidden',
+              }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.4, transform: 'rotate(-90deg)' }}>
+                  <TrendingUp size={11} color="#059669" />
+                  <Typography sx={{ fontSize: '0.58rem', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
+                    Good
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.5rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
+                    recall ≥ {fmt(e.thresholds.context_recall)}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
             <QuadrantCell q="TP" count={e.matrix.TP} pct={pct(e.matrix.TP)} themeMode={themeMode} delay={0.05} />
@@ -355,22 +361,24 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 2: Poor retrieval */}
-          <Box sx={{ display: 'flex', gap: '2px', alignItems: 'stretch' }}>
-            <Box sx={{
-              width: '88px', flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
-              border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.15)'}`,
-              borderRadius: 2, overflow: 'hidden',
-            }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, transform: 'rotate(-90deg)' }}>
-                <TrendingDown size={12} color="#dc2626" />
-                <Typography sx={{ fontSize: '0.62rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
-                  Poor retrieval
-                </Typography>
-                <Typography sx={{ fontSize: '0.55rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
-                  recall {'<'} {fmt(e.thresholds.context_recall)}
-                </Typography>
+          <Box sx={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+            <Box sx={{ width: '80px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{
+                width: '80px', height: '80px', flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
+                border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.15)'}`,
+                borderRadius: 2, overflow: 'hidden',
+              }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.4, transform: 'rotate(-90deg)' }}>
+                  <TrendingDown size={11} color="#dc2626" />
+                  <Typography sx={{ fontSize: '0.58rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap' }}>
+                    Poor
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.5rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
+                    recall {'<'} {fmt(e.thresholds.context_recall)}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
             <QuadrantCell q="FP" count={e.matrix.FP} pct={pct(e.matrix.FP)} themeMode={themeMode} delay={0.15} />
