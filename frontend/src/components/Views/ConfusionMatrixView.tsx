@@ -314,7 +314,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
               { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, ok: false },
             ] as const).map(({ label, sub, ok }) => (
               <Box key={label} sx={{
-                textAlign: 'center', py: 0.75,
+                width: '190px', textAlign: 'center', py: 0.75,
                 bgcolor: ok
                   ? (dark ? 'rgba(5,150,105,0.12)' : 'rgba(5,150,105,0.07)')
                   : (dark ? 'rgba(220,38,38,0.12)' : 'rgba(220,38,38,0.07)'),
