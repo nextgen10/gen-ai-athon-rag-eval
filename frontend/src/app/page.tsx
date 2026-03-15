@@ -171,7 +171,7 @@ function EnterpriseDashboardContent() {
     }
     return 'insights';
   });
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
 
   // Callback for SearchParamsHandler to update activeView
   const handleViewChangeFromUrl = useCallback((view: string) => {
