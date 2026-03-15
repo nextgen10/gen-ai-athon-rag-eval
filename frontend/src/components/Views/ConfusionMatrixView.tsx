@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Chip, Tooltip, Divider, alpha } from '@mui/material';
+import { Box, Typography, Chip, Tooltip, alpha } from '@mui/material';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
   XCircle, Info, ChefHat, UtensilsCrossed, TrendingUp, TrendingDown,
@@ -187,7 +187,11 @@ function MetricBar({ label, rate, color, themeMode, delay }: {
 
 export function ConfusionMatrixView({ data, themeMode }: Props) {
   const cm = data.confusion_matrix;
-  const bots = cm ? Object.keys(cm) : [];
+  const rankedBots = (data.leaderboard || [])
+    .map((row) => row.bot_id)
+    .filter((bid): bid is string => typeof bid === 'string')
+    .filter((bid) => Boolean(cm && cm[bid]));
+  const bots = cm ? (rankedBots.length > 0 ? rankedBots : Object.keys(cm)) : [];
   const [selectedBot, setSelectedBot] = useState(0);
 
   useEffect(() => { setSelectedBot(0); }, [data.id]);
@@ -205,36 +209,31 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
   const e: ConfusionMatrixEntry = cm[activeBotId];
   const total = e.matrix.TP + e.matrix.FP + e.matrix.FN + e.matrix.TN;
   const pct = (n: number) => total > 0 ? Math.round((n / total) * 100) : 0;
+  const fmt = (v: number | undefined) => Number.isFinite(v) ? Number(v).toFixed(2) : '0.00';
 
   const dark = themeMode === 'dark';
   const surfBg = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
   const surfBorder = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
   const statColors = ['#AF52DE', '#5AC8FA', '#BF5AF2', '#34C759'];
   const statItems = [
-    { label: 'Precision', value: e.precision.toFixed(2) },
-    { label: 'Recall',    value: e.recall.toFixed(2) },
-    { label: 'F1',        value: e.f1.toFixed(2) },
-    { label: 'Accuracy',  value: e.accuracy.toFixed(2) },
+    { label: 'Precision', value: fmt(e.precision) },
+    { label: 'Recall',    value: fmt(e.recall) },
+    { label: 'F1',        value: fmt(e.f1) },
+    { label: 'Accuracy',  value: fmt(e.accuracy) },
   ];
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', p: 2, gap: 1.5 }}>
 
-      {/* ── Top bar ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, gap: 1 }}>
-        <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-          {bots.map((bid, i) => (
-            <Box key={bid} onClick={() => setSelectedBot(i)} sx={{
-              px: 1.5, py: 0.4, borderRadius: 99, cursor: 'pointer', fontWeight: 700,
-              fontSize: '0.75rem', transition: 'all 0.18s',
-              bgcolor: selectedBot === i ? '#007AFF' : (dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'),
-              color: selectedBot === i ? '#fff' : 'text.secondary',
-              border: `1px solid ${selectedBot === i ? '#007AFF' : 'transparent'}`,
-              '&:hover': { borderColor: '#007AFF', color: selectedBot === i ? '#fff' : '#007AFF' },
-            }}>
-              {bid}
-            </Box>
-          ))}
+      {/* ── Header ── */}
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexShrink: 0, gap: 1.5 }}>
+        <Box sx={{ minWidth: 0 }}>
+          <Typography sx={{ fontSize: '1.02rem', fontWeight: 800, lineHeight: 1.2 }}>
+            Confusion Matrix
+          </Typography>
+          <Typography sx={{ mt: 0.35, color: 'text.secondary', fontSize: '0.78rem' }}>
+            Retrieval quality (context recall) vs generation quality (answer correctness), grouped by bot.
+          </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
           <Chip label={`${e.total_cases} total`} size="small"
@@ -249,18 +248,70 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
         </Box>
       </Box>
 
+      {/* ── Bot selector + threshold legend ── */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+          {bots.map((bid, i) => {
+            const isSelected = selectedBot === i;
+            const isWinner = data.winner && bid === data.winner;
+            return (
+              <Chip
+                key={bid}
+                label={isWinner ? `\uD83C\uDFC6 ${bid}` : bid}
+                onClick={() => setSelectedBot(i)}
+                clickable
+                size="small"
+                variant={isSelected ? 'filled' : 'outlined'}
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: isSelected ? '#007AFF' : undefined,
+                  color: isSelected ? '#fff' : 'text.secondary',
+                  borderColor: isSelected ? '#007AFF' : (isWinner ? 'warning.main' : undefined),
+                  '&:hover': {
+                    borderColor: '#007AFF',
+                    color: isSelected ? '#fff' : '#007AFF',
+                  },
+                }}
+              />
+            );
+          })}
+        </Box>
+        <Box sx={{ display: 'flex', gap: 0.65, flexWrap: 'wrap' }}>
+          <Chip
+            size="small"
+            variant="outlined"
+            label={`retrieval pass: recall \u2265 ${fmt(e.thresholds.context_recall)}`}
+            sx={{ fontSize: '0.65rem', height: 22 }}
+          />
+          <Chip
+            size="small"
+            variant="outlined"
+            label={`generation pass: correctness \u2265 ${fmt(e.thresholds.answer_correctness)}`}
+            sx={{ fontSize: '0.65rem', height: 22 }}
+          />
+        </Box>
+      </Box>
+
       {/* ── Body ── */}
-      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', gap: 1.5 }}>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          display: 'grid',
+          gap: 1.5,
+          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0,1fr) 240px' },
+        }}
+      >
 
         {/* ── Left: Matrix ── */}
-        <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 0.75, justifyContent: 'center' }}>
+        <Box sx={{ minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 1, justifyContent: 'center' }}>
 
           {/* Column axis header */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, flexShrink: 0 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1 }}>
             <Box />
             {([
-              { label: 'Answer Correct', sub: `correctness ≥ ${e.thresholds.answer_correctness}`, ok: true },
-              { label: 'Answer Wrong',   sub: `correctness < ${e.thresholds.answer_correctness}`, ok: false },
+              { label: 'Answer Correct', sub: `correctness ≥ ${fmt(e.thresholds.answer_correctness)}`, ok: true },
+              { label: 'Answer Wrong',   sub: `correctness < ${fmt(e.thresholds.answer_correctness)}`, ok: false },
             ] as const).map(({ label, sub, ok }) => (
               <Box key={label} sx={{
                 textAlign: 'center', py: 0.75,
@@ -281,9 +332,9 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 1: Good retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gridTemplateRows: '1fr', gap: 1, flex: 1, minHeight: 0, maxHeight: '220px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
             <Box sx={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1.25,
               bgcolor: dark ? 'rgba(5,150,105,0.08)' : 'rgba(5,150,105,0.05)',
               border: `1px solid ${dark ? 'rgba(52,211,153,0.2)' : 'rgba(5,150,105,0.15)'}`,
               borderRadius: 2,
@@ -295,7 +346,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
                 </Typography>
               </Box>
               <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', lineHeight: 1.4 }}>
-                recall<br />≥ {e.thresholds.context_recall}
+                recall ≥ {fmt(e.thresholds.context_recall)}
               </Typography>
             </Box>
             <QuadrantCell q="TP" count={e.matrix.TP} pct={pct(e.matrix.TP)} themeMode={themeMode} delay={0.05} />
@@ -303,9 +354,9 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
           </Box>
 
           {/* Row 2: Poor retrieval */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gridTemplateRows: '1fr', gap: 1, flex: 1, minHeight: 0, maxHeight: '220px' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '88px 1fr 1fr', gap: 1, height: '190px' }}>
             <Box sx={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', px: 1.25,
               bgcolor: dark ? 'rgba(220,38,38,0.08)' : 'rgba(220,38,38,0.05)',
               border: `1px solid ${dark ? 'rgba(248,113,113,0.2)' : 'rgba(220,38,38,0.15)'}`,
               borderRadius: 2,
@@ -317,7 +368,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
                 </Typography>
               </Box>
               <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', lineHeight: 1.4 }}>
-                recall<br />{'< '}{e.thresholds.context_recall}
+                recall {'<'} {fmt(e.thresholds.context_recall)}
               </Typography>
             </Box>
             <QuadrantCell q="FP" count={e.matrix.FP} pct={pct(e.matrix.FP)} themeMode={themeMode} delay={0.15} />
@@ -327,7 +378,7 @@ export function ConfusionMatrixView({ data, themeMode }: Props) {
 
         {/* ── Right: Sidebar ── */}
         <Box sx={{
-          flex: '0 0 220px', display: 'flex', flexDirection: 'column', gap: 1.25,
+          flex: '0 0 240px', display: 'flex', flexDirection: 'column', gap: 1.25,
           overflowY: 'auto',
           '&::-webkit-scrollbar': { display: 'none' },
           msOverflowStyle: 'none', scrollbarWidth: 'none',
