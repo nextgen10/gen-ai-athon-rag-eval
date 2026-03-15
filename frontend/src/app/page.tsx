@@ -130,14 +130,7 @@ function EnterpriseDashboardContent() {
     { key: 'gamma', label: 'Gamma (Answer Relevancy)' },
   ];
 
-  // Initialize showLanding from localStorage, default to true for first-time visitors
-  const [showLanding, setShowLanding] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const dismissed = localStorage.getItem('landingDismissed');
-      return dismissed !== 'true';
-    }
-    return true;
-  });
+  const [showLanding, setShowLanding] = useState(true);
   const [config, setConfig] = useState<ConfigState>({
     faithfulnessEnabled: true,
     answerRelevancyEnabled: true,
@@ -603,10 +596,7 @@ function EnterpriseDashboardContent() {
   if (!mounted) return null;
   if (showLanding) return (
     <ThemeProvider theme={getCustomTheme('dark')}>
-      <LandingPage onEnter={() => {
-        setShowLanding(false);
-        localStorage.setItem('landingDismissed', 'true');
-      }} />
+      <LandingPage onEnter={() => setShowLanding(false)} />
     </ThemeProvider>
   );
 
