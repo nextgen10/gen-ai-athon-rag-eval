@@ -634,13 +634,14 @@ function EnterpriseDashboardContent() {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: { xs: 2, lg: 0 },
-            backdropFilter: 'blur(24px)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
             background: (theme) => theme.palette.mode === 'dark'
-              ? 'rgba(15, 23, 42, 0.8)'
-              : 'rgba(255, 255, 255, 0.9)',
+              ? 'rgba(28, 28, 30, 0.88)'
+              : 'rgba(255, 255, 255, 0.88)',
             borderRadius: { xs: 4, md: 6 },
-            border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(0, 0, 0, 0.18)',
-            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.05)',
+            border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(60,60,67,0.12)',
+            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 24px rgba(0,0,0,0.6)' : '0 2px 16px rgba(0,0,0,0.08)',
             overflow: 'hidden',
             minHeight: { xs: 'auto', md: 80 },
             '&::before': {
@@ -653,8 +654,8 @@ function EnterpriseDashboardContent() {
               borderRadius: { xs: 4, md: 6 },
               padding: '1px',
               background: (theme) => theme.palette.mode === 'dark'
-                ? 'linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05))'
-                : 'linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05))',
+                ? 'linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.12), rgba(255,255,255,0.04))'
+                : 'linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.08), rgba(0,0,0,0.03))',
               mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               maskComposite: 'exclude',
@@ -673,15 +674,15 @@ function EnterpriseDashboardContent() {
                   px: 2,
                   py: 1,
                   borderRadius: 2,
-                  background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(15, 23, 42, 0.3))',
-                  border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 0, 0, 0.15)',
+                  background: (theme) => theme.palette.mode === 'dark' ? 'rgba(0,122,255,0.08)' : 'rgba(0,122,255,0.06)',
+                  border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(60,60,67,0.12)',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease',
+                  transition: 'all 0.2s ease',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(15, 23, 42, 0.4))',
-                    border: '1px solid rgba(37, 99, 235, 0.4)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+                    background: (theme) => theme.palette.mode === 'dark' ? 'rgba(10,132,255,0.15)' : 'rgba(0,122,255,0.1)',
+                    border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(10,132,255,0.4)' : '1px solid rgba(0,122,255,0.3)',
+                    transform: 'none',
+                    boxShadow: 'none',
                   }
                 }}
               >
@@ -689,10 +690,10 @@ function EnterpriseDashboardContent() {
                   animate={{ rotate: [0, 15, -15, 15, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <CognizantIcon size={24} color="#2563eb" strokeWidth={2} />
+                  <CognizantIcon size={24} color={themeMode === 'dark' ? '#0A84FF' : '#007AFF'} strokeWidth={2} />
                 </motion.div>
-                <Typography variant="h5" sx={{ fontWeight: 900, lineHeight: 1, letterSpacing: '-0.02em', color: 'text.primary' }}>
-                  RAG <span style={{ color: '#2563eb' }}>EVAL</span>
+                <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1, letterSpacing: '-0.02em', color: 'text.primary' }}>
+                  RAG <span style={{ color: themeMode === 'dark' ? '#0A84FF' : '#007AFF' }}>EVAL</span>
                 </Typography>
               </Box>
             </Box>
@@ -705,10 +706,10 @@ function EnterpriseDashboardContent() {
               flexWrap: 'wrap',
               gap: 0.5,
               p: 0.75,
-              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.3)' : '#f1f5f9',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.35)' : 'rgba(120,120,128,0.1)',
               borderRadius: { xs: 4, md: 99 },
-              border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(37, 99, 235, 0.25)' : '1px solid rgba(37, 99, 235, 0.15)',
-              boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 0 10px rgba(37, 99, 235, 0.1), inset 0 0 10px rgba(37, 99, 235, 0.05)' : 'none'
+              border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(60,60,67,0.1)',
+              boxShadow: 'none'
             }}>
               {[
                 { id: 'insights', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
@@ -728,21 +729,21 @@ function EnterpriseDashboardContent() {
                     borderRadius: 99,
                     fontSize: { xs: '0.7rem', md: '0.8rem' },
                     color: activeView === item.id
-                      ? (themeMode === 'dark' ? '#fff' : '#2563eb')
-                      : (themeMode === 'dark' ? '#94a3b8' : '#334155'),
+                      ? (themeMode === 'dark' ? '#fff' : '#007AFF')
+                      : (themeMode === 'dark' ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)'),
                     bgcolor: activeView === item.id
-                      ? (themeMode === 'dark' ? 'rgba(37, 99, 235, 0.25)' : 'rgba(37, 99, 235, 0.15)')
+                      ? (themeMode === 'dark' ? 'rgba(10,132,255,0.2)' : 'rgba(0,122,255,0.1)')
                       : 'transparent',
                     border: activeView === item.id
-                      ? (themeMode === 'dark' ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(0, 0, 0, 0.2)')
+                      ? (themeMode === 'dark' ? '1px solid rgba(10,132,255,0.4)' : '1px solid rgba(0,122,255,0.25)')
                       : '1px solid transparent',
-                    fontWeight: activeView === item.id ? 900 : 600,
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    fontWeight: activeView === item.id ? 700 : 500,
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      color: themeMode === 'dark' ? '#fff' : '#1e40af',
+                      color: themeMode === 'dark' ? '#fff' : '#007AFF',
                       bgcolor: activeView === item.id
-                        ? (themeMode === 'dark' ? 'rgba(37, 99, 235, 0.25)' : 'rgba(37, 99, 235, 0.2)')
-                        : (themeMode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)')
+                        ? (themeMode === 'dark' ? 'rgba(10,132,255,0.2)' : 'rgba(0,122,255,0.12)')
+                        : (themeMode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)')
                     }
                   }}
                 >
@@ -770,17 +771,14 @@ function EnterpriseDashboardContent() {
                       width: 40,
                       height: 40,
                       borderRadius: 99,
-                      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(6, 182, 212, 0.08)' : 'rgba(6, 182, 212, 0.1)',
-                      backdropFilter: 'blur(16px)',
-                      border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(6, 182, 212, 0.4)',
-                      color: '#06b6d4',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)',
+                      border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(60,60,67,0.12)',
+                      color: (theme) => theme.palette.mode === 'dark' ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)',
+                      transition: 'all 0.2s ease',
                       '&:hover': {
-                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.2)',
-                        border: '1px solid rgba(6, 182, 212, 0.8)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 32px rgba(6, 182, 212, 0.25)',
-                        color: (theme) => theme.palette.mode === 'dark' ? '#22d3ee' : '#0891b2',
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)',
+                        border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.18)' : '1px solid rgba(60,60,67,0.2)',
+                        color: (theme) => theme.palette.mode === 'dark' ? '#fff' : '#000',
                       },
                       '&.Mui-disabled': {
                         bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
@@ -807,23 +805,15 @@ function EnterpriseDashboardContent() {
                     borderRadius: 99,
                     fontSize: '0.9rem',
                     fontWeight: 800,
-                    background: '#2563eb',
-                    backdropFilter: 'blur(10px)',
+                    background: themeMode === 'dark' ? '#0A84FF' : '#007AFF',
                     color: '#fff',
                     textTransform: 'none',
-                    border: (theme) => theme.palette.mode === 'dark'
-                      ? '1px solid rgba(255, 255, 255, 0.2)'
-                      : '1px solid rgba(0, 0, 0, 0.2)',
-                    boxShadow: (theme) => theme.palette.mode === 'dark'
-                      ? '0 4px 20px rgba(37, 99, 235, 0.3)'
-                      : '0 4px 12px rgba(37, 99, 235, 0.2)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    border: 'none',
+                    boxShadow: 'none',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      background: '#1d4ed8',
-                      transform: 'translateY(-2px)',
-                      boxShadow: (theme) => theme.palette.mode === 'dark'
-                        ? '0 8px 30px rgba(37, 99, 235, 0.45)'
-                        : '0 6px 20px rgba(37, 99, 235, 0.3)',
+                      background: themeMode === 'dark' ? '#409CFF' : '#0056B3',
+                      boxShadow: themeMode === 'dark' ? '0 4px 16px rgba(10,132,255,0.35)' : '0 4px 16px rgba(0,122,255,0.28)',
                       color: '#fff',
                     }
                   }}
@@ -840,17 +830,15 @@ function EnterpriseDashboardContent() {
                     width: 40,
                     height: 40,
                     borderRadius: 99,
-                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(148, 163, 184, 0.08)' : 'rgba(148, 163, 184, 0.12)',
-                    backdropFilter: 'blur(16px)',
-                    border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(148, 163, 184, 0.4)',
-                    color: (theme) => theme.palette.mode === 'dark' ? '#cbd5e1' : '#64748b',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)',
+                    border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(60,60,67,0.12)',
+                    color: (theme) => theme.palette.mode === 'dark' ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(148, 163, 184, 0.15)' : 'rgba(148, 163, 184, 0.2)',
-                      color: (theme) => theme.palette.mode === 'dark' ? '#f8fafc' : '#334155',
-                      transform: 'rotate(15deg) scale(1.1)',
-                      boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.2)' : '0 8px 32px rgba(0,0,0,0.05)',
-                      border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(148, 163, 184, 0.6)' : '1px solid rgba(148, 163, 184, 0.6)',
+                      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)',
+                      color: (theme) => theme.palette.mode === 'dark' ? '#fff' : '#000',
+                      transform: 'none',
+                      border: (theme) => theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.18)' : '1px solid rgba(60,60,67,0.2)',
                     }
                   }}
                 >
@@ -1526,15 +1514,15 @@ function EnterpriseDashboardContent() {
           }
           @keyframes fadeInLogs { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
           @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-          .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-          .custom-scrollbar::-webkit-scrollbar-track { background: ${themeMode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.03)'}; }
-          .custom-scrollbar::-webkit-scrollbar-thumb { 
-            background: ${themeMode === 'dark' ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.3)'}; 
+          .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(120,120,128,0.3);
             border-radius: 10px;
           }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: ${themeMode === 'dark' ? 'rgba(37, 99, 235, 0.4)' : 'rgba(37, 99, 235, 0.5)'}; }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(120,120,128,0.5); }
           @media print {
-            body { background: ${themeMode === 'dark' ? '#0f172a' : '#ffffff'} !important; color: ${themeMode === 'dark' ? '#ffffff' : '#000000'} !important; }
+            body { background: ${themeMode === 'dark' ? '#1C1C1E' : '#ffffff'} !important; color: ${themeMode === 'dark' ? '#ffffff' : '#000000'} !important; }
             /* Hide the entire web UI */
             .main-ui-container { display: none !important; }
             /* Show only the print-ready report */
@@ -1577,9 +1565,9 @@ export default function EnterpriseDashboard() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: '#020617'
+          bgcolor: '#000000'
         }}>
-          <CircularProgress size={60} sx={{ color: '#2563eb' }} />
+          <CircularProgress size={60} sx={{ color: '#0A84FF' }} />
         </Box>
       }>
         <EnterpriseDashboardContent />
